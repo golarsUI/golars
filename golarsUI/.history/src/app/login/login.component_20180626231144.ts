@@ -1,0 +1,42 @@
+import { Injectable, Component, OnInit } from '@angular/core';
+import {HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
+import { Observable } from 'rxjs/Rx';
+
+@Component({
+  selector: 'golars-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent implements OnInit {
+username;
+password;
+loginData:any=""
+  constructor(private http:HttpClient) { }
+
+  ngOnInit() {
+  }
+  submitLogin(){
+    this.loginData="";
+    this.loginData={username: this.username,password: this.password};
+  console.log(this.username)
+  console.log(this.password)
+ 
+  this.http.post("http://localhost:8080/golars/rest/login", 
+  {data : this.loginData}, 
+  
+  
+  { headers : this.getHeaders()} )
+  .map(res => {
+    console.log(res)
+  })
+  .catch(this.handleError);
+  }
+  getHeaders(){
+    var httpheaders = new HttpHeaders();
+    httpheaders = httpheaders.set('Content-Type', 'application/json').set('Accept','application/json');
+    return httpheaders;
+  }
+  private handleError(error: any) {
+    return Observable.throw(error);
+  }
+}
