@@ -16,7 +16,7 @@ returnUrl: string;
   constructor(private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService) { }
-
+loginErrorMessage=null;
   ngOnInit() {
      // reset login status
      this.authenticationService.logout();
@@ -28,13 +28,19 @@ returnUrl: string;
     this.authenticationService.login(this.model.username, this.model.password)
         .subscribe(
             data => {
+              if(data.loginsuccess==true)
                this.router.navigate([this.returnUrl]);
+               else
+               this.displayErrorMessage();
             },
             error => {
+              this.loginErrorMessage="Invalid Username or Password";
                 console.log(error);
             });
 }
-
+displayErrorMessage(){
+  this.loginErrorMessage="Invalid Username or Password";
+}
   getHeaders(){
     var httpheaders = new HttpHeaders();
     httpheaders = httpheaders.set('Content-Type', 'application/json').set('Accept','application/json');

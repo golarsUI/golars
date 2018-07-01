@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 
 
 const appRoutes: Routes = [
-    { path: '', component: HomeComponent,pathMatch: 'full'},
+    { path: '', component: HomeComponent},
     { path: 'login', component: LoginComponent },
     { path: 'import', component: ImportComponent },
     { path: 'users', component: UsersComponent },

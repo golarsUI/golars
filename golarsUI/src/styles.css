@@ -5,6 +5,10 @@
 .bg-dark{
     /* background-color: green !important; */
 }
+.ui-tree{
+    height:100% !important;
+    width:100% !important;
+}
 .center_div{
     background-color: #fff;
     position: relative;

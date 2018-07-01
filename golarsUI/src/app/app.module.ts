@@ -9,7 +9,23 @@ import { routing } from './app.routing';
 import { AuthenticationService } from './services/authentication.service';
 import { ImportComponent } from './import/import.component';
 import { UsersComponent } from './users/users.component';
-
+import {AngularSplitModule} from 'angular-split';
+import {TreeModule} from 'primeng/tree';
+import { LeftnavComponent } from './leftnav/leftnav.component';
+import { FolderService } from './services/folder.service';
+import { CommonService } from './services/common.service';
+import { MiddlepaneComponent } from './middlepane/middlepane.component';
+import { RightpanelComponent } from './rightpanel/rightpanel.component';
+import {TableModule} from 'primeng/table';
+import { UserService } from './services/user.service';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import {CalendarModule} from 'primeng/calendar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {DropdownModule} from 'primeng/dropdown';
+import {CheckboxModule} from 'primeng/checkbox';
+import {ContextMenuModule} from 'primeng/contextmenu';
+import {FileUploadModule} from 'primeng/fileupload';
+import { ImportService } from './services/import.service';
 
 @NgModule({
   declarations: [
@@ -18,19 +34,40 @@ import { UsersComponent } from './users/users.component';
     HomeComponent,
     LoginComponent,
     ImportComponent,
-    UsersComponent
+    UsersComponent,
+    LeftnavComponent,
+    MiddlepaneComponent,
+    RightpanelComponent,
+    
   ],
   imports: [
     routing,
     BrowserModule,
     FormsModule,
     HttpClientModule,
+    AngularSplitModule,
+    TreeModule,
+    TableModule,
+    BrowserAnimationsModule,
+    CalendarModule,
+    DropdownModule,
+    CheckboxModule,
+    ContextMenuModule,
+    FileUploadModule
+ 
     
     
   ],
+  
   providers: [ 
-    AuthenticationService
+    AuthenticationService,
+    FolderService,
+    CommonService,
+    UserService,
+    ImportService,
+    {provide: LocationStrategy, useClass: HashLocationStrategy},
   ],
+  
   bootstrap: [AppComponent]
 })
 export class AppModule { }

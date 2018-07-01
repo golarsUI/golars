@@ -17,7 +17,7 @@ public class LoginService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createTrackInJSON(User user) {
+	public Response login(User user) {
 		boolean isLoginSuccess = false;
 		String username = user.getUsername();
 		String password = user.getPassword();
@@ -38,7 +38,7 @@ public class LoginService {
 		response.setToken(new TokenGenerator().generateToken(username));
 		}
 
-		return Response.status(201).entity(response).build();
+		return Response.status(200).entity(response).build();
 
 	}
 

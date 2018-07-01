@@ -6,6 +6,7 @@ public class UserResponse{
 	private String username;
 	private String token;
 	private boolean loginsuccess;
+	private boolean admin;
 	public String getUsername() {
 		return username;
 	}
@@ -24,7 +25,12 @@ public class UserResponse{
 	public void setLoginsuccess(boolean loginsuccess) {
 		this.loginsuccess = loginsuccess;
 	}
-
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
+	public boolean isAdmin() {
+		return admin;
+	}
 
 	
 
