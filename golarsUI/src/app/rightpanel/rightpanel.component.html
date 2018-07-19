@@ -1,7 +1,72 @@
-<div style="padding:10px">
-<div style="text-align: center">{{getDocPropertiesValue()}}</div>
-<div class="ui-g" *ngFor="let data of docData">
-  <div class="ui-g-6">{{data.key}}</div>
-  <div class="ui-g-6">{{data.value}}</div>
+
+<div *ngIf="documentProperties==true"  class='full-height-width' style="text-align: center">
+    <h4>File properties</h4>
+  <div class="spinner-placeholder" >
+      <span class="spinner-has-text">
+      <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><br/>
+      <span class="spinner-text">Loading Document Details...</span>
+      </span>
+  </div>
+  </div>
+
+<div style="padding:10px" *ngIf="docData">
+  <h4 *ngIf="!folderSelected">{{getDocPropertiesValue()}}</h4>
+  <div class="ui-g" *ngIf="docData.docUpdateDate">
+    <div class="ui-g-4">Date Document Updated</div>
+    <div class="ui-g-8">{{docData.docUpdateDate}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.fecilityName">
+    <div class="ui-g-4">Facility Name</div>
+    <div class="ui-g-8">{{docData.fecilityName}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.docDate">
+    <div class="ui-g-4">Document Date</div>
+    <div class="ui-g-8">{{docData.docDate}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.fid">
+    <div class="ui-g-4">FID</div>
+    <div class="ui-g-8">{{docData.fid}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.city">
+      <div class="ui-g-4">City</div>
+      <div class="ui-g-8">{{docData.city}}</div>
+    </div>
+    <div class="ui-g" *ngIf="docData.street">
+        <div class="ui-g-4">Street</div>
+        <div class="ui-g-8">{{docData.street}}</div>
+      </div>
+  <div class="ui-g" *ngIf="docData.stateProgram">
+    <div class="ui-g-4">State Program</div>
+    <div class="ui-g-8">{{docData.stateProgram}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.active">
+    <div class="ui-g-4">Is Active</div>
+    <div class="ui-g-8">{{docData.active}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.docTypes">
+    <div class="ui-g-4">Document Type</div>
+    <div class="ui-g-8">{{docData.docTypes}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.scopeOfWork">
+    <div class="ui-g-4">Scope of Work</div>
+    <div class="ui-g-8">{{docData.scopeOfWork}}</div>
+  </div>
+  <div class="ui-g" *ngIf="!folderSelected">
+      <div class="ui-g-4">URL</div>
+      <div class="ui-g-7 wrap-text"><a href="#" data-toggle="modal"  data-target="#contentModal">{{docURL}}</a></div>
+      <div class="ui-g-1" > <i [ngStyle]="{'color':copyclicked === true ? '#FF8C86' : '#89E093' }" (click)="copyclicked=true;copyButtontitle='Copied'" class="fa fa-clipboard" aria-hidden="true"  ngxClipboard [cbContent]="docURL" style="cursor: pointer;" [title]="copyButtontitle"></i></div>
+    </div>
+  
+
 </div>
-</div>
+<!-- Modal -->
+<div class="modal fade" id="contentModal" role="dialog" >
+    <div class="modal-dialog modal-lg" style="height:90%">
+      <div class="modal-content" style="height:100%">
+        <div class="modal-body" style="height:100%">
+            <iframe [src]="getDocURL() | safe"  width="100%"  style="border: none;height: calc(100% - 5px)"></iframe>
+        </div>
+       
+      </div>
+    </div>
+  </div>

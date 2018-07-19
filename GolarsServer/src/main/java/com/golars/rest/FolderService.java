@@ -14,101 +14,104 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.golars.bean.Folder;
-import com.golars.bean.KeyValue;
+import com.golars.bean.UserSettings;
+import com.golars.util.DBUtil;
+import com.golars.util.GolarsUtil;
+import com.google.gson.Gson;
 
 @Path("/folders")
 public class FolderService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response retrieveFolder(@QueryParam("folderId") String folderId,
-			@QueryParam("documentsRequired") boolean docRequired) {
-
+	public Response retrieveFolder(@QueryParam("folderId") String folderId, @QueryParam("parentId") String parentId,
+			@QueryParam("documentsRequired") boolean docRequired, @QueryParam("username") String username,
+			@QueryParam("isAdmin") boolean isadmin) {
 		List<Folder> folderList = new ArrayList<Folder>();
-		for (int i = 0; i < 10; i++) {
-			Folder folder = new Folder();
-			folder.setId(i + "");
-			folder.setLabel("name" + i);
-			folder.setParentid("parentId" + i);
-			folder.setExpandedIcon("fa fa-folder-open");
-			folder.setCollapsedIcon("fa fa-folder");
+		if (folderId.equals("-1"))
+			folderList = new DBUtil().retrieveAllFolders(username, isadmin);
+		else {
+			String parentFOlderId = parentId.equalsIgnoreCase("null") ? folderId : parentId + folderId;
+			if(docRequired)
+			folderList = new DBUtil().retrieveSpecificFolders(parentFOlderId, username, isadmin);
+			else
+				folderList = new DBUtil().retrieveSpecificFolders(parentFOlderId, username, isadmin,docRequired);
+				
+		}
+		if (folderId.equals("-1")) {
+			Folder folder = GolarsUtil.getChildren(GolarsUtil.getCurrentNode(1000, folderList), folderList);
+			folderList.clear();
 			folderList.add(folder);
-			if (!docRequired) {
-				List<Folder> children = createDummyChildren();
-				folder.setChildren(children);
-			} else {
-				List<Folder> children = createDummyFiles();
-				folderList.addAll(children);
-			}
 		}
 
-		return Response.status(201).entity(folderList).build();
+		return Response.status(200).entity(folderList).build();
+	}
+
+	@GET
+	@Path("/preferences")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response retrieveFolderTablePreferences(@QueryParam("isAdmin") boolean isadmin) {
+		String preferenceName = getPreferenceString(isadmin);
+		List<UserSettings> preferences = new DBUtil().retrieveUserPreferences();
+		return Response.status(200).entity(preferences).build();
 	}
 	
+	@POST
+	@Path("/preferences")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response saveFolderTablePreferences(String userSettings) {
+		UserSettings[] settingArray = new Gson().fromJson(userSettings, UserSettings[].class);
+		new DBUtil().updatePreferences(settingArray);
+		
+//		String preferenceName = getPreferenceString(isadmin);
+//		List<UserSettings> preferences = new DBUtil().retrieveUserPreferences();
+//		new DBUtil().retrieveUserPreferences();
+//		List<UserSettings> preferences = new DBUtil().retrieveUserPreferences();
+		List<UserSettings> preferences = new DBUtil().retrieveUserPreferences();
+		return Response.status(200).entity(preferences).build();
+	}
+
+	private String getPreferenceString(boolean isadmin) {
+		if (isadmin)
+			return "adminTableColumns";
+		else
+			return "nonAdminTableColumns";
+	}
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createFolder(Folder folder) {
 		String label = folder.getLabel();
 		String parentFolderID = folder.getParentid();
-		folder.setExpandedIcon("fa fa-folder-open");
-		folder.setCollapsedIcon("fa fa-folder");
-		System.out.println("folder is created with name--"+label+" in folder-->"+parentFolderID);
-		return Response.status(201).entity(folder).build();
+		Folder returnedfolder = new DBUtil().createFolder(folder);
+		if (returnedfolder == null)
+			return Response.status(200).entity(returnedfolder).build();
+		System.out.println("folder is created with name--" + label + " in folder-->" + parentFolderID);
+		return Response.status(200).entity(returnedfolder).build();
 
 	}
+
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deleteeFolder(@QueryParam("documentId") String documentId) {
+	public Response deleteeFolder(@QueryParam("folderId") String folderId, @QueryParam("parentId") String parentId,@QueryParam("username") String username,
+			@QueryParam("isAdmin") boolean isadmin) {
 
-		
+		int result = new DBUtil().deleteFolder(folderId, parentId,username,isadmin);
 
-		return Response.status(201).entity(true).build();
+		return Response.status(200).entity(result).build();
 	}
 
 	@GET
-	@Path("/documentdetails")
+	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response retrieveDocumentDetailsr(@QueryParam("documentId") String docId) {
-
-		List<KeyValue> docList = new ArrayList<KeyValue>();
-		for (int i = 0; i < 10; i++) {
-			KeyValue keyValue = new KeyValue();
-			keyValue.setKey(docId+" Key" + i);
-			keyValue.setValue(docId+" Value" + i);
-			docList.add(keyValue);
-		}
-
-		return Response.status(201).entity(docList).build();
-	}
-
-	private List<Folder> createDummyFiles() {
+	public Response fetchSearchResults(@QueryParam("searchString") String searchString, @QueryParam("username") String username,
+			@QueryParam("isAdmin") boolean isadmin) {
 		List<Folder> folderList = new ArrayList<Folder>();
-		for (int i = 0; i < 5; i++) {
-			Folder folder = new Folder();
-			folder.setId(i + "");
-			folder.setLabel("name" + i);
-			folder.setParentid("parentId" + i);
-			if (i % 2 == 0)
-				folder.setIcon("fa fa-file-word-o");
-			else
-				folder.setIcon("fa fa-file-pdf-o");
-			folderList.add(folder);
-		}
-		return folderList;
+			folderList = new DBUtil().retrieveSearchResults(searchString,username, isadmin);
+
+		return Response.status(200).entity(folderList).build();
 	}
 
-	private List<Folder> createDummyChildren() {
-		List<Folder> folderList = new ArrayList<Folder>();
-		for (int i = 0; i < 2; i++) {
-			Folder folder = new Folder();
-			folder.setId(i + "");
-			folder.setLabel("name" + i);
-			folder.setParentid("parentId" + i);
-			folder.setExpandedIcon("fa fa-folder-open");
-			folder.setCollapsedIcon("fa fa-folder");
-			folderList.add(folder);
-		}
-		return folderList;
-	}
 }

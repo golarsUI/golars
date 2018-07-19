@@ -1,19 +1,20 @@
 package com.golars.rest;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.golars.bean.KeyValue;
+import com.golars.bean.Document;
+import com.golars.bean.Folder;
+import com.golars.util.DBUtil;
 import com.google.gson.Gson;
 import com.sun.jersey.core.header.ContentDisposition;
 import com.sun.jersey.multipart.BodyPart;
@@ -27,44 +28,49 @@ public class ImportService {
 
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response uploadFile(@FormDataParam("fileUpload") FormDataBodyPart body,@FormDataParam("docProperties") String documentProperties) {
-		
-		
+	public Response uploadFile(@FormDataParam("fileUpload") FormDataBodyPart body,
+			@FormDataParam("docProperties") String documentProperties,
+			@FormDataParam("folderProperties") String folderProperties) {
+		boolean result = false;
+
 		for (BodyPart part : body.getParent().getBodyParts()) {
 
 			InputStream is = part.getEntityAs(InputStream.class);
 			ContentDisposition meta = part.getContentDisposition();
-			if(meta.getFileName()!=null){
-			 String uploadedFileLocation = "c:\\test\\test\\"+ meta.getFileName();
-			    writeToFile(is, uploadedFileLocation);
+			if (meta.getFileName() != null) {
+				String fileName = getFileExtension(meta.getFileName()).equalsIgnoreCase("")
+						? meta.getFileName() + ".pdf" : meta.getFileName();
+				Folder folder = new Gson().fromJson(folderProperties, Folder.class);
+				result = new DBUtil().saveDocument(is, fileName, documentProperties, folder);
 			}
 		}
-		KeyValue[] keyValues = new Gson().fromJson(documentProperties, KeyValue[].class);
-		return Response.status(200).entity(true).build();
+		return Response.status(200).entity(result).build();
 	}
-	
-	// save uploaded file to new location
-	private void writeToFile(InputStream uploadedInputStream,
-	        String uploadedFileLocation) {
 
-	    try {
-	        OutputStream out = new FileOutputStream(new File(
-	                uploadedFileLocation));
-	        int read = 0;
-	        byte[] bytes = new byte[1024];
+	@Path("{id}/{filename}")
+	@GET
+	public Response getPDF(@PathParam("id") int id,@PathParam("filename") String filename) throws Exception {
+		Document doc = new DBUtil().retrieveDocument(id,filename);
 
-	        out = new FileOutputStream(new File(uploadedFileLocation));
-	        while ((read = uploadedInputStream.read(bytes)) != -1) {
-	            out.write(bytes, 0, read);
-	        }
-	        out.flush();
-	        out.close();
-	    } catch (IOException e) {
+		return Response.ok(doc.getContent(), generateContentType(doc.getFilename())) // TODO:
+																						// set
+																						// content-type
+																						// of
+																						// your
+																						// file
+				.header("Content-type:", generateContentType(doc.getFilename()))
+				.header("content-disposition", "inline; filename = " + doc.getFilename()).build();
+	}
 
-	        e.printStackTrace();
-	    }
+	private String generateContentType(String filename) {
+		if (filename.endsWith(".pdf"))
+			return "application/pdf";
+		return MediaType.APPLICATION_OCTET_STREAM;
+	}
 
-	   }
-
+	public static String getFileExtension(String fullName) {
+		int dotIndex = fullName.lastIndexOf('.');
+		return (dotIndex == -1) ? "" : fullName.substring(dotIndex + 1);
+	}
 
 }

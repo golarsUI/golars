@@ -1,23 +1,32 @@
 package com.golars.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+
 public class Folder {
-	private String id = "";
-	private String label = "";
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	private String label;
 	private String parentid;
-	private List<Folder> children;
-	private String expandedIcon;
-	private String collapsedIcon;
-	private String icon;
-	
+	private boolean folder;
+	private List<Folder> children = new ArrayList<Folder>();
+	private String username;
+	private String properties;
 
-	public String getId() {
-		return id;
-	}
+//	public Folder(String id, String parentid, String label) {
+//		this.id = id;
+//		this.parentid = parentid;
+//		this.label = label;
+//	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
+	}
+	public int getId() {
+		return id;
 	}
 
 	public void setLabel(String label) {
@@ -44,26 +53,23 @@ public class Folder {
 		return children;
 	}
 
-	public String getExpandedIcon() {
-		return expandedIcon;
+	public void setFolder(boolean folder) {
+		this.folder = folder;
 	}
 
-	public void setExpandedIcon(String expandedIcon) {
-		this.expandedIcon = expandedIcon;
+	public boolean isFolder() {
+		return folder;
 	}
-
-	public String getCollapsedIcon() {
-		return collapsedIcon;
+	public void setUsername(String username) {
+		this.username = username;
 	}
-
-	public void setCollapsedIcon(String collapsedIcon) {
-		this.collapsedIcon = collapsedIcon;
+	public String getUsername() {
+		return username;
 	}
-	public void setIcon(String icon) {
-		this.icon = icon;
+	public String getProperties() {
+		return properties;
 	}
-	public String getIcon() {
-		return icon;
+	public void setProperties(String properties) {
+		this.properties = properties;
 	}
-
 }

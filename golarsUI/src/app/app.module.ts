@@ -26,7 +26,16 @@ import {CheckboxModule} from 'primeng/checkbox';
 import {ContextMenuModule} from 'primeng/contextmenu';
 import {FileUploadModule} from 'primeng/fileupload';
 import { ImportService } from './services/import.service';
-
+import { UserComponent } from './user/user.component';
+import {MultiSelectModule} from 'primeng/multiselect';
+import { ChangepasswordComponent } from './changepassword/changepassword.component';
+import { ClipboardModule } from 'ngx-clipboard';
+import { SettingsComponent } from './settings/settings.component';
+import { ConfigurationComponent } from './configuration/configuration.component';
+import {InputTextareaModule} from 'primeng/inputtextarea';
+import {TabViewModule} from 'primeng/tabview';
+import { SafePipe } from './services/SafePipe';
+import { ResetpasswordComponent } from './resetpassword/resetpassword.component';
 @NgModule({
   declarations: [
 
@@ -38,7 +47,13 @@ import { ImportService } from './services/import.service';
     LeftnavComponent,
     MiddlepaneComponent,
     RightpanelComponent,
-    
+    UserComponent,
+    ChangepasswordComponent,
+    SettingsComponent,
+    ConfigurationComponent,
+    SafePipe,
+    ResetpasswordComponent
+
   ],
   imports: [
     routing,
@@ -53,9 +68,11 @@ import { ImportService } from './services/import.service';
     DropdownModule,
     CheckboxModule,
     ContextMenuModule,
-    FileUploadModule
- 
-    
+    FileUploadModule,
+    MultiSelectModule,
+    ClipboardModule,
+    InputTextareaModule,
+    TabViewModule
     
   ],
   

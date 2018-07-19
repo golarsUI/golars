@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { URLConstants } from '../constants/urlconstants';
 import { GolarsConstants } from '../constants/golarsconstants';
 
@@ -8,22 +8,30 @@ export class FolderService {
 
   constructor(private http: HttpClient) { }
 
-  fetchFolders(id: string, docRequired: boolean) {
-      return this.http.get<any>(URLConstants.FOLDER_URL,this.getOptions(id,docRequired))
+  searchResults(searchString: string,username: string,isadmin:boolean) {
+      return this.http.get<any>(URLConstants.SEARCH_URL,this.getSearchOptions(searchString,username,isadmin))
           .map(folder => {
               
               return folder;
           });
   }
-  fetchDocumentDetails(id: string) {
-    return this.http.get<any>(URLConstants.DOCUMENT_DETAILS_URL,this.getDocOptions(id))
+  fetchFolders(id: string,parentid: string, docRequired: boolean, username: string,isadmin:boolean) {
+    return this.http.get<any>(URLConstants.FOLDER_URL,this.getOptions(id,parentid,docRequired,username,isadmin))
+        .map(folder => {
+            
+            return folder;
+        });
+}
+
+  fetchDocumentDetails(documentName) {
+    return this.http.get<any>(URLConstants.DOCUMENT_DETAILS_URL,this.getDocOptions(documentName))
         .map(docProperties => {
             
             return docProperties;
         });
 }
-createFolder(foldername: string, parentFolderId: string) {
-  return this.http.post<any>(URLConstants.FOLDER_URL, { label: foldername, parentid: parentFolderId })
+createFolder(foldername: string, parentFolderId: string,isFolder:boolean,username:string) {
+  return this.http.post<any>(URLConstants.FOLDER_URL, { label: foldername, parentid: parentFolderId,folder:isFolder,username:username })
       .map(folder => {
           // login successful if there's a token in the response
          
@@ -31,23 +39,57 @@ createFolder(foldername: string, parentFolderId: string) {
           return folder;
       });
 }
-deleteFolder(id: string) {
-  return this.http.delete<any>(URLConstants.FOLDER_URL,this.getDocOptions(id))
+deleteFolder(id: string,parentId:String,username:String,isAdmin:boolean) {
+  return this.http.delete<any>(URLConstants.FOLDER_URL,this.getDeleteFolderOptions(id,parentId,username,isAdmin))
+      .map(folder => {
+          
+          return folder;
+      });
+}
+fetchTablePreferences(isadmin:boolean) {
+  return this.http.get<any>(URLConstants.FOLDER_TABLE_PREFERENCES,this.getPreferencesOptions(isadmin))
+      .map(folder => {
+          
+          return folder;
+      });
+}
+saveTablePreferences(data) {
+  return this.http.post<any>(URLConstants.FOLDER_TABLE_PREFERENCES,JSON.stringify(data),{ headers : this.getHeaders()})
       .map(folder => {
           
           return folder;
       });
 }
 
-  private getOptions(id, docRequired) {
+  private getOptions(id,parentId, docRequired,username,isadmin) {
     return {
-      params: new HttpParams().set(GolarsConstants.FOLDER_ID,id).set(GolarsConstants.DOCUMENTS_REQUIRED,docRequired)
+      params: new HttpParams().set(GolarsConstants.FOLDER_ID,id).set(GolarsConstants.PARENT_ID,parentId).set(GolarsConstants.DOCUMENTS_REQUIRED,docRequired)
+      .set(GolarsConstants.USERNAME,username).set(GolarsConstants.ISADMIN,isadmin)
     };
   }
-  private getDocOptions(id) {
+  private getDocOptions(documentName) {
     return {
-      params: new HttpParams().set(GolarsConstants.DOCUMENTS_ID,id)
+      params: new HttpParams().set(GolarsConstants.DOCUMENT_NAME,documentName)
     };
   }
-
+  private getDeleteFolderOptions(id,parentId,username,isAdmin) {
+    return {
+      params: new HttpParams().set(GolarsConstants.FOLDER_ID,id).set(GolarsConstants.PARENT_ID,parentId).set(GolarsConstants.USERNAME,username).set(GolarsConstants.ISADMIN,isAdmin)
+    };
+  }
+  getPreferencesOptions(isAdmin){
+    return {
+      params: new HttpParams().set(GolarsConstants.ISADMIN,isAdmin)
+    };
+  }
+  getHeaders(){
+    var httpheaders = new HttpHeaders();
+    httpheaders = httpheaders.set('Content-Type', 'application/json').set('Accept','application/json');
+    return httpheaders;
+  }
+  private getSearchOptions(searchString,username,isadmin) {
+    return {
+      params: new HttpParams().set(GolarsConstants.SEARCH_STRING,searchString).set(GolarsConstants.USERNAME,username).set(GolarsConstants.ISADMIN,isadmin)
+    };
+  }
 }

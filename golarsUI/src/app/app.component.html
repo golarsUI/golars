@@ -1,58 +1,71 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" [hidden]="!checkLoginSuccesful()">
+<nav class="navbar navbar-expand-lg navbar-light bg-light nav-background-color navbar-height" [hidden]="!checkLoginSuccesful()">
+    <a class="navbar-brand "  style="text-align: center"><img src="assets/images/golars-nav-bar.jpg" style="height:65px; width:170px;margin-top:25px" alt="Golars"> 
+    <p style="font-size: 13px;color:white;padding-bottom: 5px">Content Management System </p>
+    </a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" routerLink="home">Home </a>
+      </li>
+      <li class="nav-item">
+        <a id="navbar_createNew" class="nav-link"  style="cursor: pointer;" [ngClass]="{disabled :  !isNodeSelected}">Create Folder
+          <i class="fa fa-plus nag-bar-icon-color" aria-hidden="true"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a id="navbar_import" class="nav-link"  style="cursor: pointer;" [ngClass]="{disabled : checkImportDisabled() }">Import
+          <i class="fa fa-download nag-bar-icon-color" aria-hidden="true"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a id="navbar_configuration" routerLink="configuration"  class="nav-link" [hidden]="!isAdmin" (click)='isNodeSelected=false' style="cursor: pointer;">Configuration
+        </a>
+      </li>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" routerLink="home">Home </a>
-        </li>
-        <li class="nav-item" >
-            <a id="navbar_createNew" class="nav-link" routerLink="#" [ngClass]="{disabled : !isNodeSelected}">Create Folder <i class="fa fa-plus" aria-hidden="true"></i></a>
-          </li>
-        <li class="nav-item" >
-          <a id="navbar_import" class="nav-link" routerLink="#" [ngClass]="{disabled : !isNodeSelected}">Import <i class="fa fa-download" aria-hidden="true"></i></a>
-        </li>
 
-        
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Users
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" routerLink="users">List of Users</a>
-            <a class="dropdown-item" href="newuser">Add User</a>
-            </div>
-        </li>
-      </ul>
-      <div class="form-inline my-2 my-lg-0">
-      <form >
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      <li class="nav-item dropdown" [hidden]="!isAdmin">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false">
+          Users
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" routerLink="users" (click)='isNodeSelected=false'>List of Users</a>
+          <a class="dropdown-item" routerLink="newuser" (click)='isNodeSelected=false'>Add User</a>
+          <a class="dropdown-item" routerLink="settings" (click)='isNodeSelected=false'>User Settings</a>
+        </div>
+      </li>
+    </ul>
+    <div class="form-inline my-2 my-lg-0">
+        <span style="padding:5px;color:white">Welcome, {{fullName}}</span>
+      <form>
+        <input type="text"  class="form-control" name="searchString" [(ngModel)]="searchString" />
+     
+        <button class="btn btn-primary search-icon-color"  [ngClass]="{disabled : checkSearchEnabled() }" (click)="fetchSearchResults()" >Search</button>
       </form>
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-                <a class="nav-link" (click)="logout()" routerLink="#">Logout</a>
-         </li>
-          </ul>
+          <a class="nav-link" (click)="isNodeSelected=false;logout()" routerLink="#">Logout</a>
+        </li>
+      </ul>
     </div>
-    </div>
-  </nav>
-  <router-outlet></router-outlet>
-
-  <div class="modal fade bd-example-modal-lg" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Import File into {{importFolder}}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-          <div class="modal-body">
-          <golars-import></golars-import>
-            </div>
-            
-          </div>
-        </div>
+  </div>
+</nav>
+<router-outlet  (activate)="checkValidUser()" ></router-outlet>
+<div class="footer-text">&nbsp; </div>
+<div class="modal fade bd-example-modal-lg" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Import File into {{importFolder}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <golars-import></golars-import>
       </div>
 
-
+    </div>
+  </div>
+</div>
