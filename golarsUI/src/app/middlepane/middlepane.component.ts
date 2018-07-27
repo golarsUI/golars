@@ -18,41 +18,42 @@ export class MiddlepaneComponent implements OnInit {
   treeLoadingProgress = false;
   golarsServer = environment.server;
   cols = [];
-  selectedDocumet;
+  selectedDocumet=[];
   leftMenuSelectedNode;
   applyIconsColor = false;
+  tableColumnArray =['fid','fecilityName','docUpdateDate','docDate','stateProgram','docTypes', 'scopeOfWork','active']
   tableColumnMapping = {
-    'docUpdateDate': 'Date Document Updated',
-    'fecilityName': 'Facility Name',
-    'docDate': 'Document Date',
     'fid': 'FID',
+    'fecilityName': 'Facility Name',
+    'docUpdateDate': 'Date Document Uploaded',
+    'docDate': 'Document Date',
     'stateProgram': 'State Program',
-    'active': 'Is Active',
     'docTypes': 'Document Type',
-    'scopeOfWork': 'Scope of Work'
+    'scopeOfWork': 'Scope of Work',
+    'active': 'Is Active'
   }
   constructor(private folderService: FolderService, private commonService: CommonService) { }
 
   ngOnInit() {
     this.commonService.notifyObservable$.subscribe((treeNode) => {
       if (treeNode !== null && treeNode !== undefined &&  treeNode.node !== undefined && treeNode.type === "fetchSubFolders") {
-        console.log("fetchSubFolders ");  
+        // console.log("fetchSubFolders ",this.selectedNode);  
         this.treeLoadingProgress = true;
         this.folderData = [];
-        this.selectedDocumet = [];
+        this.selectedDocumet[0]=this.selectedNode;
         this.leftMenuSelectedNode = treeNode;
         this.fetchSubFolders();
-
+       
       }else if(treeNode !== null && treeNode !== undefined&& treeNode.searchString !== undefined && treeNode.type === "fetchSearchResults"){
         this.folderService.searchResults(treeNode.searchString,this.commonService.getUserName(),this.commonService.isAdmin()).subscribe(
           data => {
-console.log("search results came ",data);  
+// console.log("search results came ",data);  
             this.getColumns();
             data = this.constructFolderFirst(data);
             this.folderData = this.constructTableData(data);
             this.folderDetailstreeLoading = false;
             this.treeLoadingProgress = false;
-            console.log("search results came ",this.folderData);  
+            // console.log("search results came ",this.folderData);  
           },
           error => {
             console.log(error);
@@ -82,6 +83,14 @@ console.log("search results came ",data);
       if (data[i].folder == true)
         continue;
       data[i].properties = JSON.parse(data[i].properties);
+      if(data[i].properties.docUpdateDate!=null){
+        data[i].properties.docUpdateDate = this.commonService.getFormatteDate(data[i].properties.docUpdateDate);
+        
+      }
+      if(data[i].properties.docDate!=null){
+        data[i].properties.docDate = this.commonService.getFormatteDate(data[i].properties.docDate);
+      }
+      data[i].properties.fid = this.commonService.getFID(data[i].properties.fid);
     }
     return data;
   }
@@ -113,6 +122,7 @@ console.log("search results came ",data);
       .subscribe(
         folder => {
           this.commonService.notify({ type: 'refreshFolder', node: this.leftMenuSelectedNode.node, isDocumentsRequired: true });
+
           //   // this.treeComponent.
           //   // this.selectedNode.parentid
           //   var index = this.folderData.children.indexOf(this.selectedNode);
@@ -129,11 +139,11 @@ console.log("search results came ",data);
   nodeSelect(event) {
     this.selectedNode = event.data;
     this.commonService.notify({ type: 'documentDetails', node: event.data, isDocumentsRequired: true });
-    console.log("middle nodeSelect", event);
+    // console.log("middle nodeSelect", event);
     this.applyIconsColor = true;
   }
   nodeUnselect(event) {
-    console.log("nodeUnselect", event)
+    // console.log("nodeUnselect", event)
   }
   addFolderClass(element) {
     element.expandedIcon = GolarsConstants.FOLDER_OPEN_ICON;
@@ -152,13 +162,19 @@ console.log("search results came ",data);
     else
       prefString = this.commonService.getTableNonAdminPreferences()
     var pefArray = prefString.split(GolarsConstants.SPLIT_STRING)
-    for (var i = 0; i < pefArray.length; i++) {
-      this.cols.push({ field: pefArray[i], header: this.tableColumnMapping[pefArray[i]] });
+    for (var i = 0; i < this.tableColumnArray.length; i++) {
+      if(this.tableColumnArray.indexOf(pefArray[i])>=0)
+      this.cols.push({ field: this.tableColumnArray[i], header: this.tableColumnMapping[this.tableColumnArray[i]] });
     }
   }
 
   deleteFolderOrDocument() {
     $('#middle_pane_folder_delete_model').modal('show');
+  }
+  editDocument(rowData){
+    this.commonService.setDocData(JSON.stringify(rowData))
+    $('#importModal').modal('show');
+    // console.log(rowData)
   }
   customSort(event) {
     event.data.sort((data1, data2) => {
@@ -199,5 +215,5 @@ console.log("search results came ",data);
       return (event.order * result);
     });
   }
-
+  
 }

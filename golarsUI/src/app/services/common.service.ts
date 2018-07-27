@@ -4,6 +4,7 @@ import { ImportFieldValues } from "../import/import.mapping";
 
 
 export class CommonService {
+
   private notifySub = new Subject<any>();
   /**
    * Observable string streams
@@ -23,6 +24,16 @@ export class CommonService {
   else
       return "";
   }
+  getEditUser(){
+    if(localStorage.getItem("editUser")!==null)
+      return localStorage.getItem("editUser");
+  else
+      return null;
+    
+  }
+  removeEditUser(){
+    localStorage.removeItem("editUser");
+    localStorage.removeItem("docData");    }
   isAdmin(){
     if(localStorage.getItem("admin")!==null)
     if(localStorage.getItem("admin")=="true")
@@ -71,6 +82,36 @@ export class CommonService {
 
       return GolarsConstants.DEFAULT_LOGIN_CONTENT_URL;
 
+  }
+  setDocData(docData){
+    localStorage.setItem("docData", docData);  
+  }
+  getDocData(){
+    if(localStorage.getItem("docData")!==null && localStorage.getItem("docData")!=="")
+      return localStorage.getItem("docData");
+      return null;
+  }
+  getFormatteDate(dateString) {
+    var date = new Date(dateString);
+
+    var day = date.getDate();
+    var month = date.getMonth() + 1; // add 1 because months are indexed from 0
+    var year = date.getFullYear();
+
+    return month + '/' + day + '/' + year;
+  }
+  getFID(value) {
+    if(value == null || value == undefined)
+    return value;
+    try {
+      var num = Number(value)
+      if(isNaN(num))
+      return value;
+      else 
+      return num;
+    } catch (error) {
+      return value;
+    }
   }
  
 }

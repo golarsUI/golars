@@ -24,42 +24,52 @@ export class LeftnavComponent implements OnInit {
     isDocumentsRequired = false;
     selectedNode;
     items = [ ];
+    hideContextMenu=true;
     selectedItemParentNode;
     createFolderFailureMessage = null;
     createFoldershowFailureMessage = false;
+    refreshInProgress=false;
     nodeSelect(event) {
         // this.selectedNodeLabel = event.node.label;
         this.selectedItemParentNode = event.node.parent;
-        event.node.expanded = !event.node.expanded;
+        event.node.expanded =true;
         this.commonService.notify({ type: 'fetchSubFolders', node: this.selectedNode, isDocumentsRequired: true });
-        console.log("nodeSelect", event)
-        this.commonService.notifyObservable$.subscribe((treeNode) => {
-            if (treeNode !== null && treeNode !== undefined && treeNode.node !== undefined && treeNode.type === "refreshFolder") {
+        // console.log("nodeSelect", event)
 
-                this.folderService.fetchFolders(treeNode.node.id,treeNode.node.parentid, false,this.commonService.getUserName(),this.commonService.isAdmin()) // retrieve all thd parent folders
-                .subscribe(
-                    data => {
-                        data.forEach(element => {
-                            this.addFolderClass(element);
-                        });
-                        // this.treeLoading=false;
-                        treeNode.node.children = data;
-                        this.commonService.notify({ type: 'fetchSubFolders', node: this.selectedNode, isDocumentsRequired: true });
-                        // data.forEach(function(entry) {
-                        //     console.log(entry);
-                        // })
-                    },
-                    error => {
-                        console.log(error);
-                    });
-            }
-        });
+
     }
+    selectTreeNode(children,id){
+        for(var i=0;i<children.length;i++){
+            var folder = children[i];
+            if(folder.id == id){
+                return folder;
+                // folder.expanded = true;
+                // this.treeComponent.selection = folder;
+            //    this.expandChildren(this.treeComponent.selection)
+            }
+            
+            else{
+            //   folder.expanded=true;
+           return  this.selectTreeNode(folder.children,id)
+        }
+
+        }
+    }
+    expandParent(node:TreeNode){
+        node.expanded=true;
+        if(node.parent){
+          if(node.parent!=null)
+          this.expandParent(node.parent)
+         
+        }
+      }
 
     nodeRightClickSelect(event) {
+        this.hideContextMenu=true;
         this.items = [];
         this.selectedNode = event.node;
         this.selectedItemParentNode = event.node.parent;
+        if(this.commonService.isAdmin() || this.selectedNode.username.toUpperCase().indexOf(this.commonService.getUserName().toUpperCase())>=0)
         this.items = [
             { label: 'New Folder', command: (event) => this.createNewFolder() }
         ]; 
@@ -68,14 +78,17 @@ export class LeftnavComponent implements OnInit {
             this.items.push({ label: 'Import', command: (event) => this.ImportFile() });
             this.items.push({ label: 'Delete Folder', command: (event) => this.deleteFolder(event) });
            
-        } else{
+        } else  if(this.commonService.isAdmin() || this.selectedNode.username.toUpperCase().indexOf(this.commonService.getUserName().toUpperCase())>=0){
             this.items.push({ label: 'Import', command: (event) => this.ImportFile() });
         }
     }
         this.selectedNode.expanded = true;
         this.commonService.notify({ type: 'fetchSubFolders', node: this.selectedNode, isDocumentsRequired: true });
-        this.isDocumentsRequired
-        console.log("nodeSelect", event)
+        // this.isDocumentsRequired
+        // console.log("nodeSelect", event)
+        if( this.items.length>0){
+            this.hideContextMenu=false;
+        }
     }
 
     ImportFile() {
@@ -106,15 +119,61 @@ export class LeftnavComponent implements OnInit {
             self.resetAlertMessages();
       
         })
+        this.commonService.notifyObservable$.subscribe((treeNode) => {
 
+            if (treeNode !== null && treeNode !== undefined && treeNode.node !== undefined && treeNode.type === "documentDetails") {
+                var parentId = treeNode.node.parentid;
+                if (parentId != null)
+                    parentId = parentId.substring(parentId.length - 4);
+                this.folderData[0].expanded = true;
+                var folder;
+                var folderId = parseInt(parentId);
+                for (var i = 0; i < this.folderData[0].children.length; i++) {
+                    if(this.folderData[0].children[i].id == folderId){
+                        folder =this.folderData[0].children[i];
+                        break; 
+                    }
+                    folder = this.selectTreeNode(this.folderData[0].children[i].children, folderId);
+                    if (folder != null)
+                        break;
+                }
+                if (folder != null){
+                    folder.expanded=true;
+                    this.treeComponent.selection = folder;
+                    this.expandParent(folder)
+                }
+            } else if (treeNode !== null && treeNode !== undefined && treeNode.node !== undefined && treeNode.type === "refreshFolder") {
+                    if(!this.refreshInProgress){
+                    this.refreshInProgress = true;
+                this.folderService.fetchFolders(treeNode.node.id,treeNode.node.parentid, false,this.commonService.getUserName(),this.commonService.isAdmin()) // retrieve all thd parent folders
+                .subscribe(
+                    data => {
+                        data.forEach(element => {
+                            this.addFolderClass(element,null);
+                        });
+                        // this.treeLoading=false;
+                        treeNode.node.children = data;
+                        this.commonService.notify({ type: 'fetchSubFolders', node: this.selectedNode, isDocumentsRequired: true });
+                        // data.forEach(function(entry) {
+                        //     console.log(entry);
+                        // })
+                        this.refreshInProgress = false;
+                    },
+                    error => {
+                        console.log(error);
+                    });
+            }
+        }
+        });
         this.folderService.fetchFolders("-1",null, this.isDocumentsRequired,this.commonService.getUserName(),this.commonService.isAdmin()) // retrieve all thd parent folders
             .subscribe(
                 data => {
                     data.forEach(element => {
-                        this.addFolderClass(element);
+                        this.addFolderClass(element,null);
                     });
                     this.treeLoading=false;
                     this.folderData = data;
+                    this.folderData[0].expanded = true;
                     // data.forEach(function(entry) {
                     //     console.log(entry);
                     // })
@@ -123,12 +182,17 @@ export class LeftnavComponent implements OnInit {
                     console.log(error);
                 });
     }
-    addFolderClass(element) {
+
+    addFolderClass(element,parent) {
         element.expandedIcon = GolarsConstants.FOLDER_OPEN_ICON;
         element.collapsedIcon = GolarsConstants.FOLDER_CLOSE_ICON;
+        if(parent != null)
+        element.parent = parent;
+        parent = element;
         if (element.children != null && element.children.length > 0)
             element.children.forEach(element => {
-                this.addFolderClass(element);
+                element.parent = parent;
+                this.addFolderClass(element,parent);
             });
 
     }
@@ -148,7 +212,7 @@ export class LeftnavComponent implements OnInit {
                     result.parent=this.selectedNode;
                     this.treeComponent.selection = result;
                     this.selectedNode = result;
-                    this.addFolderClass(result)
+                    this.addFolderClass(result,result.parent)
                     $('#create_Folder_Modal').modal('hide');
                     this.newfolder = "";
                     this.commonService.notify({ type: 'fetchSubFolders', node: this.selectedNode, isDocumentsRequired: true });

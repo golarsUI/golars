@@ -8,15 +8,21 @@
         <a class="nav-link" routerLink="home">Home </a>
       </li>
       <li class="nav-item">
-        <a id="navbar_createNew" class="nav-link"  style="cursor: pointer;" [ngClass]="{disabled :  !isNodeSelected}">Create Folder
+        <a id="navbar_createNew" class="nav-link"  style="cursor: pointer;" [ngClass]="{disabled :  checkCreateButtonDisabled()}">Create Folder
           <i class="fa fa-plus nag-bar-icon-color" aria-hidden="true"></i>
         </a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" >
         <a id="navbar_import" class="nav-link"  style="cursor: pointer;" [ngClass]="{disabled : checkImportDisabled() }">Import
           <i class="fa fa-download nag-bar-icon-color" aria-hidden="true"></i>
         </a>
       </li>
+      <li class="nav-item" [hidden]="!isAdmin">
+          <a id="navbar_bulk_import" class="nav-link"  style="cursor: pointer;">Bulk Import
+            <i class="fa fa-download nag-bar-icon-color" aria-hidden="true"></i>
+          </a>
+        </li>
+     
       <li class="nav-item">
         <a id="navbar_configuration" routerLink="configuration"  class="nav-link" [hidden]="!isAdmin" (click)='isNodeSelected=false' style="cursor: pointer;">Configuration
         </a>
@@ -56,16 +62,17 @@
   aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Import File into {{importFolder}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
         <golars-import></golars-import>
-      </div>
-
+ 
+    </div>
+  </div>
+</div>
+<div class="modal fade bd-example-modal-lg" id="bulkImportModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <golars-bulkimport></golars-bulkimport>
+ 
     </div>
   </div>
 </div>
