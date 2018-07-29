@@ -283,11 +283,13 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// trx = session.beginTransaction();
+			System.out.println("id-------"+id+" ---------"+filename);
 			Query query = session.createNativeQuery("SELECT * FROM document d where d.name =:name and d.id =:folderId",
 					Document.class);
 			query.setString("name", filename);
 			query.setInteger("folderId", id);
 			List list = query.list();
+			System.out.println("list-------"+list);
 			Document doc = new Document();
 			if(list!=null && list.size()>0)
 				doc = (Document) list.get(0);
@@ -355,8 +357,8 @@ public class DBUtil {
 
 	private void getAllParents(List<Folder> lst, List<Folder> tempList, Session session, Folder folder) {
 		
-			if(folder.getId()!=1000 && checkExists(lst,folder.getParentid())==0){
-				String parentid = folder.getParentid().substring(folder.getParentid().length()-4);
+			if(folder.getId()!=1000 && checkExists(lst,folder)==0){
+				String parentid = folder.getParentid().substring(folder.getParentid().length()-folder.getId()+"".length());
 				int pId = Integer.parseInt(parentid);
 				Folder flder = (Folder) session.get(Folder.class, pId);
 				if(!lst.contains(flder) && !tempList.contains(flder))
@@ -369,8 +371,8 @@ public class DBUtil {
 		}
 	}
 
-	private int checkExists(List<Folder> lst, String parentid) {
-		parentid = parentid.substring(parentid.length()-4);
+	private int checkExists(List<Folder> lst, Folder folderObj) {
+		String parentid  = folderObj.getParentid().substring(folderObj.getParentid().length()-folderObj.getId()+"".length());
 		int pId = Integer.parseInt(parentid);
 		for (Folder folder : lst) {
 			
@@ -379,6 +381,16 @@ public class DBUtil {
 		}
 		return 0;
 	}
+//	private int checkExists(List<Folder> lst, String parentid) {
+//		parentid = parentid.substring(parentid.length()-getIndex(parentid));
+//		int pId = Integer.parseInt(parentid);
+//		for (Folder folder : lst) {
+//			
+//			if(folder.getId()== pId)
+//				return pId;
+//		}
+//		return 0;
+//	}
 
 	public Folder createFolder(Folder folder) {
 
@@ -396,10 +408,17 @@ public class DBUtil {
 				return null;
 			query = session.createNativeQuery("SELECT * FROM folder f where f.id = :id and isFolder=true",
 					Folder.class);
-			String parentID = folder.getParentid().length() > 4
+			String parentID = null;
+			parentID = folder.getParentid().length() > 4
 					? folder.getParentid().substring(folder.getParentid().length() - 4) : folder.getParentid();
 			query.setString("id", parentID);
 			lst = query.list();
+			if(lst == null || lst.size()==0 ){
+				parentID = folder.getParentid().length() > 4
+						? folder.getParentid().substring(folder.getParentid().length() - 5) : folder.getParentid();
+				query.setString("id", parentID);
+				lst = query.list();
+			}
 			Folder parentFolder = (Folder) lst.get(0);
 			folder.setUsername(parentFolder.getUsername()+ "&&&***&&&" + folder.getUsername() + "&&&***&&&");
 
@@ -423,6 +442,14 @@ public class DBUtil {
 
 		}
 		return null;
+	}
+
+	private int getIndex(String parentid) {
+		if(parentid.length() % 4 == 0)
+			return 4;
+		else
+			
+		return 5;
 	}
 
 	public List<Folder> retrieveSpecificFolderWithParentIdAndName(String folderId) {
@@ -456,9 +483,14 @@ public class DBUtil {
 			if (isadmin)
 				query = session.createNativeQuery("SELECT * FROM folder f where f.parentId = :parentId", Folder.class);
 			else {
-				int id = Integer.parseInt(folderId.substring(folderId.length()-4));
+				Folder folder = null;
+				int id = Integer.parseInt(folderId.substring(folderId.length()- 5 ));
+				folder = (Folder) session.get(Folder.class, id);
+				if(folder==null){
+					id = Integer.parseInt(folderId.substring(folderId.length()- 4 ));
+					folder = (Folder) session.get(Folder.class, id);
+				}
 
-				Folder folder = (Folder) session.get(Folder.class, id);
 				if(folder!=null && folder.getUsername().toUpperCase().contains( username.toUpperCase() + "&&&***&&&")){
 					query = session.createNativeQuery("SELECT * FROM folder f where f.parentId = :parentId", Folder.class);
 				}else{
