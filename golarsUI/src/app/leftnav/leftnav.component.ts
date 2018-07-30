@@ -124,7 +124,7 @@ export class LeftnavComponent implements OnInit {
             if (treeNode !== null && treeNode !== undefined && treeNode.node !== undefined && treeNode.type === "documentDetails") {
                 var parentId = treeNode.node.parentid;
                 if (parentId != null)
-                    parentId = parentId.substring(parentId.length - 4);
+                    parentId = parentId.substring(parentId.length - treeNode.node.id.toString().length);
                 this.folderData[0].expanded = true;
                 var folder;
                 var folderId = parseInt(parentId);

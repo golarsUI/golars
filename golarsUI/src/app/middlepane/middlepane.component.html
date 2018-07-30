@@ -11,7 +11,7 @@
 <div *ngIf="folderDetailstreeLoading==false" class='full-height-width'>
     <div class="heading-text"><img class="image-height" src="assets/images/documents.jpeg"/></div>
     <p-table [columns]="cols"  [value]="folderData" selectionMode="multiple" [metaKeySelection]="true" [(selection)]="selectedDocumet" dataKey="id" (onRowSelect)="nodeSelect($event)"
-     (onRowUnselect)="nodeSelect($event)" (sortFunction)="customSort($event)"  [customSort]="true">
+     (onRowUnselect)="nodeSelect($event)" (sortFunction)="customSort($event)"  [customSort]="true" [paginator]="true" [rows]="500" [scrollable]="true" scrollHeight="calc(100vh - 267px)">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th width="100px" [pSortableColumn]="'label'">
