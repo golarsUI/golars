@@ -39,7 +39,7 @@ public class FolderService {
 				
 		}
 		if (folderId.equals("-1")) {
-			Folder folder = GolarsUtil.getChildren(GolarsUtil.getCurrentNode(1000, folderList), folderList);
+			Folder folder = GolarsUtil.getChildren(GolarsUtil.getCurrentNode(1000000, folderList), folderList);
 			folderList.clear();
 			folderList.add(folder);
 		}

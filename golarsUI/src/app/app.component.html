@@ -44,6 +44,7 @@
     <div class="form-inline my-2 my-lg-0">
         <span style="padding:5px;color:white">Welcome, {{fullName}}</span>
       <form>
+        <label class="sand-box">Sand Box</label>
         <input type="text"  class="form-control" name="searchString" [(ngModel)]="searchString" />
      
         <button class="btn btn-primary search-icon-color"  [ngClass]="{disabled : checkSearchEnabled() }" (click)="fetchSearchResults()" >Search</button>

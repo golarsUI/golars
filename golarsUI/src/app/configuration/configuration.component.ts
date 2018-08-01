@@ -28,11 +28,13 @@ export class ConfigurationComponent implements OnInit {
   stateProgramproeprties = [];
   preferencesData = [];
   loginContentURL;
+  deleteChecked:Boolean;
   selectedIndex:number=1;
   ngOnInit() {
 
     this.generateConfigurationData();
     this.loginContentURL = this.commonService.getLoginContentURL();
+    this.deleteChecked = Boolean(this.commonService.getdeleteChecked()=="true");
   }
   generateConfigurationData() {
     this.docTypeTableCols = [];
@@ -362,11 +364,12 @@ export class ConfigurationComponent implements OnInit {
   saveLoginContentURL(){
     this.preferencesData=[];
     this.preferencesData.push({ key: "loginContentURL", value: this.loginContentURL });
+    this.preferencesData.push({ key: "enableDeleteOption", value: this.deleteChecked });
     this.folderService.saveTablePreferences(this.preferencesData)
     .subscribe(
       data => {
         this.showSuccessMessage = true;
-        this.successMessage = "Login Content URL saved successfully";
+        this.successMessage = "Login Content URL & Enable Delete  saved successfully";
         this.commonService.updatePreferences(data);
 
 

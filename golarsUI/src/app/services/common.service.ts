@@ -83,6 +83,12 @@ export class CommonService {
       return GolarsConstants.DEFAULT_LOGIN_CONTENT_URL;
 
   }
+  getdeleteChecked(){
+    if(localStorage.getItem("enableDeleteOption")!==null && localStorage.getItem("enableDeleteOption")!=="")
+    return localStorage.getItem("enableDeleteOption");
+
+      return GolarsConstants.DEFAULT_DELETE_OPTION_ENABLE;
+  }
   setDocData(docData){
     localStorage.setItem("docData", docData);  
   }

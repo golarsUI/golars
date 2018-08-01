@@ -76,6 +76,7 @@ export class LeftnavComponent implements OnInit {
         if(event.node.id != GolarsConstants.ROOTID){
         if(this.commonService.isAdmin() ){
             this.items.push({ label: 'Import', command: (event) => this.ImportFile() });
+            if(this.commonService.getdeleteChecked()== "true")
             this.items.push({ label: 'Delete Folder', command: (event) => this.deleteFolder(event) });
            
         } else  if(this.commonService.isAdmin() || this.selectedNode.username.toUpperCase().indexOf(this.commonService.getUserName().toUpperCase())>=0){

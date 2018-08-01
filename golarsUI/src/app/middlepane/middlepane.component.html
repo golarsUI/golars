@@ -45,7 +45,7 @@
 
                 <td *ngIf="commonService.isAdmin()" width="50px">
                         <i class="fa fa-edit" *ngIf="rowData['folder']==false" style="font-size:24px;cursor: pointer;" title="Edit Document" (click)="editDocument(rowData)"></i>
-                        <i class="fa fa-trash" style="font-size:24px;cursor: pointer;" (click)="deleteFolderOrDocument()" title="Delete Document"></i>
+                        <i class="fa fa-trash" *ngIf="commonService.getdeleteChecked()=='true'" style="font-size:24px;cursor: pointer;" (click)="deleteFolderOrDocument()" title="Delete Document"></i>
                     </td>
                 <!-- <td *ngFor="let col of columns">
                                 {{rowData.properties[col.field]}}

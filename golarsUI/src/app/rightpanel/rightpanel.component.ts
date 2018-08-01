@@ -72,7 +72,7 @@ export class RightpanelComponent implements OnInit {
     return "File properties of " + this.docName;
   }
   getDocumentId(node) {
-    return node.parentid.substring(node.parentid.length - node.id.toString().length)
+    return node.parentid.substring(node.parentid.length - 7)
   }
   
 }

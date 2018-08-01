@@ -207,13 +207,21 @@ export class MiddlepaneComponent implements OnInit {
         result = 1;
       else if (value1 == null && value2 == null)
         result = 0;
-      else if (typeof value1 === 'string' && typeof value2 === 'string')
-        result = (data1.folder-data2.folder) ||value1.localeCompare(value2);
+      else if(event.field=="docUpdateDate" || event.field=="docDate") {
+        result =  (data1.folder-data2.folder) ||this.dateCompare(value1,value2);
+      }else if (typeof value1 === 'string' && typeof value2 === 'string')
+        result = (data1.folder-data2.folder) ||value1.toLowerCase().localeCompare(value2.toLowerCase());
       else
         result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
 
       return (event.order * result);
     });
   }
-  
+  dateCompare(value1,value2){
+    var date1 = new Date(value1);
+    var date2 = new Date(value2)
+    if(date1 <date2) return -1;
+    if(date1 > date2) return 1;
+    return 0;
+  } 
 }

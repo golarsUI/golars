@@ -8,6 +8,14 @@
     <p-tabView [activeIndex]="selectedIndex" (onChange)="checkAddPanelVisible($event)">
       <p-tabPanel header="Login Content">
           <div class="ui-g">
+              <div class="ui-g-7">
+                  <div>
+                      <p-checkbox [(ngModel)]="deleteChecked" binary="true"></p-checkbox>  <label>Enable Delete</label>
+                      
+                    </div>
+                </div>
+                </div>
+          <div class="ui-g">
         <div class="ui-g-7">
           <div>
             <label>Login Page Content URL:</label>

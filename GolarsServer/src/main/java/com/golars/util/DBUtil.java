@@ -54,6 +54,7 @@ public class DBUtil {
 			session.save(userObj);
 			if (userObj.getPermissonFolderID() != null && !userObj.getPermissonFolderID().equalsIgnoreCase(""))
 				for (String folderId : userObj.getPermissonFolderID().split(",")) {
+					folderId = folderId.substring(0,folderId.indexOf("%%$%%"));
 					int id = Integer.parseInt(folderId);
 
 					Folder folder = (Folder) session.get(Folder.class, id);
@@ -113,7 +114,7 @@ public class DBUtil {
 				}
 				for (String folderId : userObj.getPermissonFolderID().split(",")) {
 					
-				
+					folderId = folderId.substring(0,folderId.indexOf("%%$%%"));
 					int id = Integer.parseInt(folderId);
 
 					Folder folder = (Folder) session.get(Folder.class, id);
@@ -127,7 +128,7 @@ public class DBUtil {
 				if(foldername.endsWith(",")){
 					foldername = foldername.substring(0, foldername.lastIndexOf(","));
 				}
-				user.setPermissonFolderID(foldername);
+				user.setPermissonFolderID(userObj.getPermissonFolderID());
 				session.update(user);
 			}
 			trx.commit();
@@ -319,7 +320,7 @@ public class DBUtil {
 				query = session.createNativeQuery("SELECT * FROM folder f where f.isFolder=:isFolder order by name", Folder.class);
 			else {
 				query = session.createNativeQuery(
-						"SELECT * FROM folder f where f.isFolder=:isFolder and UPPER(userName) LIKE :userName or f.id=1000 order by name",
+						"SELECT * FROM folder f where f.isFolder=:isFolder and UPPER(userName) LIKE :userName or f.id=1000000 order by name",
 						Folder.class);
 				query.setString("userName", "%" + username.toLowerCase() + "&&&***&&&%");
 			}
@@ -328,7 +329,7 @@ public class DBUtil {
 			lst = query.list();
 			if (!isadmin) {
 				for (Folder folderObj : lst) {
-					if (folderObj.getId() != 1000) {
+					if (folderObj.getId() != 1000000) {
 						List<Folder> childList = retrieveSpecificFolders(folderObj.getParentid() + folderObj.getId(),
 								username, isadmin, false);
 						folderObj.setChildren(childList);
@@ -357,13 +358,13 @@ public class DBUtil {
 
 	private void getAllParents(List<Folder> lst, List<Folder> tempList, Session session, Folder folder) {
 		
-			if(folder.getId()!=1000 && checkExists(lst,folder)==0){
-				String parentid = folder.getParentid().substring(folder.getParentid().length()-folder.getId()+"".length());
+			if(folder.getId()!=1000000 && checkExists(lst,folder.getParentid())==0){
+				String parentid = folder.getParentid().substring(folder.getParentid().length()-7);
 				int pId = Integer.parseInt(parentid);
 				Folder flder = (Folder) session.get(Folder.class, pId);
 				if(!lst.contains(flder) && !tempList.contains(flder))
 					tempList.add(flder);
-				if(folder.getParentid().equalsIgnoreCase("1000"))
+				if(folder.getParentid().equalsIgnoreCase("1000000"))
 					return;
 				else
 					getAllParents(lst, tempList, session,flder);
@@ -371,8 +372,8 @@ public class DBUtil {
 		}
 	}
 
-	private int checkExists(List<Folder> lst, Folder folderObj) {
-		String parentid  = folderObj.getParentid().substring(folderObj.getParentid().length()-folderObj.getId()+"".length());
+	private int checkExists(List<Folder> lst, String parentid) {
+		parentid = parentid.substring(parentid.length()-7);
 		int pId = Integer.parseInt(parentid);
 		for (Folder folder : lst) {
 			
@@ -381,16 +382,6 @@ public class DBUtil {
 		}
 		return 0;
 	}
-//	private int checkExists(List<Folder> lst, String parentid) {
-//		parentid = parentid.substring(parentid.length()-getIndex(parentid));
-//		int pId = Integer.parseInt(parentid);
-//		for (Folder folder : lst) {
-//			
-//			if(folder.getId()== pId)
-//				return pId;
-//		}
-//		return 0;
-//	}
 
 	public Folder createFolder(Folder folder) {
 
@@ -408,17 +399,10 @@ public class DBUtil {
 				return null;
 			query = session.createNativeQuery("SELECT * FROM folder f where f.id = :id and isFolder=true",
 					Folder.class);
-			String parentID = null;
-			parentID = folder.getParentid().length() > 4
-					? folder.getParentid().substring(folder.getParentid().length() - 4) : folder.getParentid();
+			String parentID = folder.getParentid().length() > 7
+					? folder.getParentid().substring(folder.getParentid().length() - 7) : folder.getParentid();
 			query.setString("id", parentID);
 			lst = query.list();
-			if(lst == null || lst.size()==0 ){
-				parentID = folder.getParentid().length() > 4
-						? folder.getParentid().substring(folder.getParentid().length() - 5) : folder.getParentid();
-				query.setString("id", parentID);
-				lst = query.list();
-			}
 			Folder parentFolder = (Folder) lst.get(0);
 			folder.setUsername(parentFolder.getUsername()+ "&&&***&&&" + folder.getUsername() + "&&&***&&&");
 
@@ -442,14 +426,6 @@ public class DBUtil {
 
 		}
 		return null;
-	}
-
-	private int getIndex(String parentid) {
-		if(parentid.length() % 4 == 0)
-			return 4;
-		else
-			
-		return 5;
 	}
 
 	public List<Folder> retrieveSpecificFolderWithParentIdAndName(String folderId) {
@@ -483,14 +459,9 @@ public class DBUtil {
 			if (isadmin)
 				query = session.createNativeQuery("SELECT * FROM folder f where f.parentId = :parentId", Folder.class);
 			else {
-				Folder folder = null;
-				int id = Integer.parseInt(folderId.substring(folderId.length()- 5 ));
-				folder = (Folder) session.get(Folder.class, id);
-				if(folder==null){
-					id = Integer.parseInt(folderId.substring(folderId.length()- 4 ));
-					folder = (Folder) session.get(Folder.class, id);
-				}
+				int id = Integer.parseInt(folderId.substring(folderId.length()-7));
 
+				Folder folder = (Folder) session.get(Folder.class, id);
 				if(folder!=null && folder.getUsername().toUpperCase().contains( username.toUpperCase() + "&&&***&&&")){
 					query = session.createNativeQuery("SELECT * FROM folder f where f.parentId = :parentId", Folder.class);
 				}else{
@@ -733,7 +704,7 @@ public class DBUtil {
 			lst = query.list();
 			// if (!isadmin) {
 			// for (Folder folderObj : lst) {
-			// if (folderObj.getId() != 1000) {
+			// if (folderObj.getId() != 1000000) {
 			// List<Folder> childList =
 			// retrieveSpecificFolders(folderObj.getParentid() +
 			// folderObj.getId(),

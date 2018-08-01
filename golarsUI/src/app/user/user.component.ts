@@ -4,6 +4,7 @@ import { FormGroup, NgForm } from '@angular/forms';
 import { CommonService } from '../services/common.service';
 import { FolderService } from '../services/folder.service';
 import { GolarsConstants } from '../constants/golarsconstants';
+import { TreeNode, TreeModule, Tree } from 'primeng/primeng';
 
 @Component({
   selector: 'golars-user',
@@ -12,17 +13,20 @@ import { GolarsConstants } from '../constants/golarsconstants';
 })
 export class UserComponent implements OnInit {
   model: any = {};
+  @ViewChild('userTree')  treeComponent: Tree;
   constructor(private userService: UserService, private commonService: CommonService, private folderService: FolderService) { }
   showSuccessMessage = false;
   showFailureMessage = false;
   successMessage = null;
   failureMessage = null;
   disableRegisterButton = false;
-  selectedFiles;
+  selectedFiles=[];
+  selectedFoldres=[];
   folderData: any;
   treeLoading = true;
   isEdit = false;
   user;
+  folderArray=[];
   @ViewChild('f') formElem: NgForm;
   ngOnInit() {
     this.user = this.commonService.getEditUser();
@@ -35,10 +39,12 @@ export class UserComponent implements OnInit {
       .subscribe(
         data => {
           data.forEach(element => {
-            this.addFolderClass(element);
+            this.addFolderClass(element,null);
           });
+          
           this.treeLoading = false;
           this.folderData = data;
+          this.selectFolders()
           // data.forEach(function(entry) {
           //     console.log(entry);
           // })
@@ -79,27 +85,76 @@ export class UserComponent implements OnInit {
             this.showFailureMessage = true;
             this.failureMessage = "User Already Exists.";
           }
-          console.log(result)
+          // console.log(result)
         },
         error => {
           console.log(error)
         });
   }
-  addFolderClass(element) {
-    element.expandedIcon = GolarsConstants.FOLDER_OPEN_ICON;
-    element.collapsedIcon = GolarsConstants.FOLDER_CLOSE_ICON;
-    if (element.children != null && element.children.length > 0)
+  selectTreeNode(children,id){
+    for(var i=0;i<children.length;i++){
+        var folder = children[i];
+        if(folder.id == id){
+          this.folder = folder;
+          return ;
+            // folder.expanded = true;
+            // this.treeComponent.selection = folder;
+        //    this.expandChildren(this.treeComponent.selection)
+        }
+        
+        else{
+        //   folder.expanded=true;
+       this.selectTreeNode(folder.children,id)
+    }
+
+    }
+}
+addFolderClass(element,parent) {
+  element.expandedIcon = GolarsConstants.FOLDER_OPEN_ICON;
+  element.collapsedIcon = GolarsConstants.FOLDER_CLOSE_ICON;
+  if(this.folderArray.indexOf(element.id.toString())>=0){
+  this.selectedFoldres.push(element.id);
+}
+  if(parent != null)
+  element.parent = parent;
+  parent = element;
+  if (element.children != null && element.children.length > 0)
       element.children.forEach(element => {
-        this.addFolderClass(element);
+          element.parent = parent;
+          this.addFolderClass(element,parent);
       });
 
+}
+expandParent(node){
+  node.expanded=true;
+  if(!node.selected)
+    node.partialSelected =true;
+    if(node.parent){
+      if(node.parent!=null)
+      this.expandParent(node.parent)
+     
+    }
+  }
+  folder;
+  selectFolders() {
+   for(var i=0;i<this.selectedFoldres.length;i++){
+    this.folder=null;
+    this.selectTreeNode(this.folderData,Number(this.selectedFoldres[i]))
+    if (this.folder != null){
+      this. folder.expanded=true;
+      this. folder.selected=true;
+      this.selectedFiles.push(this.folder);
+      // this.treeComponent.selection = folder;
+      this.expandParent(this.folder)
+  }
+   }
   }
   fillPermissionField() {
     this.model.filePermission = "";
     this.model.permissonFolderID = ""
     for (var i = 0; i < this.selectedFiles.length; i++) {
       this.model.filePermission += this.selectedFiles[i].label;
-      this.model.permissonFolderID += this.selectedFiles[i].id;
+      this.model.permissonFolderID += this.selectedFiles[i].id+"%%$%%"+this.selectedFiles[i].label;
       if (i < this.selectedFiles.length - 1) {
         this.model.filePermission += ",";
         this.model.permissonFolderID += ",";
@@ -119,7 +174,26 @@ export class UserComponent implements OnInit {
     this.model.email = this.user.emailAddress;
     this.model.admin = this.user.admin;
     this.model.active = this.user.active;
-    this.model.filePermission = this.user.permissonFolderID;
+    var folderNameArray = this.user.permissonFolderID.split(",");
+    var folderDisplayName = "";
+    if(folderNameArray.length>0){
+    for(var j=0;j<folderNameArray.length;j++){
+      var folderName=""
+      if(folderNameArray[j].indexOf("%%$%%")>=0){
+      folderName =  folderNameArray[j].substring(folderNameArray[j].indexOf("%%$%%")+5);
+      this.folderArray.push(folderNameArray[j].substring(0,folderNameArray[j].indexOf("%%$%%")))
+    }
+      else
+      folderName = folderNameArray[j];
+      
+      folderDisplayName+=folderName;
+      if(j < folderNameArray.length-1)
+      folderDisplayName+=", "
+    }
+  }else{
+    folderDisplayName = folderNameArray;
+  }
+    this.model.filePermission = folderDisplayName;
     this.model.username = this.user.username;
     this.model.password = this.user.password;
   }
