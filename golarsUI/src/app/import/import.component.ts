@@ -108,8 +108,17 @@ this.model.docUpdateDate = new Date();
     this.getStateProgramAndScopeOfWorkDropDOwn(null)
     this.model.active = docData.properties.active;
     this.model.docTypes = docData.properties.docTypes;
-    this.model.scopeOfWork = docData.properties.scopeOfWork;
+    if(docData.properties.scopeOfWork != null && docData.properties.scopeOfWork.length>0 && docData.properties.scopeOfWork.indexOf(';')>0)
+      this.constructScopeOfWorkArray(docData.properties.scopeOfWork);
+    else if(docData.properties.scopeOfWork != null && Array.isArray(docData.properties.scopeOfWork))
+      this.model.scopeOfWork = docData.properties.scopeOfWork;
+    else if(docData.properties.scopeOfWork!=null)
+      this.model.scopeOfWork.push(docData.properties.scopeOfWork);
 
+  }
+  constructScopeOfWorkArray(scopeofworkObj){
+    var docSworkArray = scopeofworkObj.split(";")
+    this.model.scopeOfWork = docSworkArray;
   }
   updateDocumentProperties(){
     // console.log(this.docData)

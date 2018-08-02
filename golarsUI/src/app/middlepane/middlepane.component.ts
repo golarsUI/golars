@@ -163,7 +163,7 @@ export class MiddlepaneComponent implements OnInit {
       prefString = this.commonService.getTableNonAdminPreferences()
     var pefArray = prefString.split(GolarsConstants.SPLIT_STRING)
     for (var i = 0; i < this.tableColumnArray.length; i++) {
-      if(this.tableColumnArray.indexOf(pefArray[i])>=0)
+      if(pefArray.indexOf(this.tableColumnArray[i])>=0)
       this.cols.push({ field: this.tableColumnArray[i], header: this.tableColumnMapping[this.tableColumnArray[i]] });
     }
   }
