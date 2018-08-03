@@ -43,7 +43,7 @@ public class ImportService {
 				String fileName = getFileExtension(meta.getFileName()).equalsIgnoreCase("")
 						?gen()+".pdf" : meta.getFileName();
 				Folder folder = new Gson().fromJson(folderProperties, Folder.class);
-				result = new DBUtil().saveDocument(is, fileName, documentProperties, folder);
+				result = DBUtil.getInstance().saveDocument(is, fileName, documentProperties, folder);
 			}
 		}
 		return Response.status(200).entity(result).build();
@@ -52,7 +52,7 @@ public class ImportService {
 	@Path("{id}/{filename}")
 	@GET
 	public Response getPDF(@PathParam("id") int id, @PathParam("filename") String filename) throws Exception {	
-		Document doc = new DBUtil().retrieveDocument(id, filename);
+		Document doc = DBUtil.getInstance().retrieveDocument(id, filename);
 
 		return Response.ok(doc.getContent(), generateContentType(doc.getFilename())) // TODO:
 																						// set
@@ -88,7 +88,7 @@ public class ImportService {
 		String properties = dataObj.get("properties").getAsString();
 		// JsonObject dataObj1 = new Gson().fromJson(dataObj.get("data"),
 		// JsonObject.class);
-		int resultInt = new DBUtil().updateDocumentProperties(docId, docName, properties);
+		int resultInt = DBUtil.getInstance().updateDocumentProperties(docId, docName, properties);
 		if (resultInt > 0)
 			result = true;
 		return Response.status(200).entity(result).build();

@@ -205,9 +205,9 @@ public class BulkImportService {
 					URL xyz = new URL(remoteURL);
 					URLConnection xyzcon = xyz.openConnection();
 					bean.addProperty("username", userName);
-					Folder folder = new DBUtil().getFolder(path);
+					Folder folder = DBUtil.getInstance().getFolder(path);
 					InputStream in = xyzcon.getInputStream();
-					new DBUtil().saveDocument(in, url, new Gson().toJson(bean), folder);
+					DBUtil.getInstance().saveDocument(in, url, new Gson().toJson(bean), folder);
 					insertCount++;
 					System.out.println(insertCount + " Files(s) imported of " + totalcount);
 					System.out.println("File imported is " + url + " into " + path + " ");
@@ -227,7 +227,7 @@ public class BulkImportService {
 		;
 
 		System.out.println("Imported documents succesfully. " + totalcount + " documents Imported");
-		User user = new DBUtil().getUser(userName);
+		User user = DBUtil.getInstance().getUser(userName);
 		new MailUtil().bulkImportEmail(user, totalcount);
 	}
 

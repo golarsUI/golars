@@ -18,12 +18,24 @@ import com.golars.bean.User;
 import com.golars.bean.UserSettings;
 
 public class DBUtil {
+	private static DBUtil dbObj;
+
+	public DBUtil() {
+	}
+
+	public static DBUtil getInstance() {
+		if (dbObj == null) {
+			dbObj = new DBUtil();
+		}
+		return dbObj;
+	}
+
 	public User login(String username, String password) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			User user = (User) session.get(User.class, username);
-			password = new String(Base64.getEncoder().encode(password.getBytes()) );
+			password = new String(Base64.getEncoder().encode(password.getBytes()));
 			if (password.equals(user.getPassword())) {
 				trx.commit();
 				session.close();
@@ -54,7 +66,7 @@ public class DBUtil {
 			session.save(userObj);
 			if (userObj.getPermissonFolderID() != null && !userObj.getPermissonFolderID().equalsIgnoreCase(""))
 				for (String folderId : userObj.getPermissonFolderID().split(",")) {
-					folderId = folderId.substring(0,folderId.indexOf("%%$%%"));
+					folderId = folderId.substring(0, folderId.indexOf("%%$%%"));
 					int id = Integer.parseInt(folderId);
 
 					Folder folder = (Folder) session.get(Folder.class, id);
@@ -74,58 +86,61 @@ public class DBUtil {
 			return null;
 		}
 	}
+
 	public User editUser(User userObj) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
 			User user = (User) session.get(User.class, userObj.getUsername());
-			if(!userObj.getPassword().equals(user.getPassword()))
-			userObj.setPassword(new String(Base64.getEncoder().encode(userObj.getPassword().getBytes())));
-//			userObj.setNewlyCreated(user.isNewlyCreated());
-//			boolean newleyCreated = user.isNewlyCreated();
+			if (!userObj.getPassword().equals(user.getPassword()))
+				userObj.setPassword(new String(Base64.getEncoder().encode(userObj.getPassword().getBytes())));
+			// userObj.setNewlyCreated(user.isNewlyCreated());
+			// boolean newleyCreated = user.isNewlyCreated();
 			user.setFirstName(userObj.getFirstName());
 			user.setLastName(userObj.getLastName());
 			user.setActive(userObj.isActive());
 			user.setAdmin(userObj.isAdmin());
 			user.setEmailAddress(userObj.getEmailAddress());
 			user.setPassword(userObj.getPassword());
-//			user.setNewlyCreated(newleyCreated);
+			// user.setNewlyCreated(newleyCreated);
 			session.update(user);
-			String foldername="";
-			if (userObj.getPermissonFolderID() != null && !userObj.getPermissonFolderID().equalsIgnoreCase("")){
-				//claring all the permissions
+			String foldername = "";
+			if (userObj.getPermissonFolderID() != null && !userObj.getPermissonFolderID().equalsIgnoreCase("")) {
+				// claring all the permissions
 				Query query = null;
 				List<Folder> lst = null;
-				query = session.createNativeQuery("SELECT * FROM folder f where f.userName LIKE :username", Folder.class);
-				query.setString("username", "%&&&***&&&"+ userObj.getUsername() +"&&&***&&&%");
-				lst =query.list();
-				if(lst.size()>0)
-				{
+				query = session.createNativeQuery("SELECT * FROM folder f where f.userName LIKE :username",
+						Folder.class);
+				query.setString("username", "%&&&***&&&" + userObj.getUsername() + "&&&***&&&%");
+				lst = query.list();
+				if (lst.size() > 0) {
 					for (Folder folder : lst) {
-						folder.setUsername(folder.getUsername().replaceAll("&&&\\*\\*\\*&&&"+ userObj.getUsername() +"&&&\\*\\*\\*&&&", ""));
-//						query = session.createNativeQuery("UPDATE folder f set f.userName =: where username f.userName =:username");
-//						query.setString("username", folder.getUsername());
-//						query.executeUpdate();
+						folder.setUsername(folder.getUsername()
+								.replaceAll("&&&\\*\\*\\*&&&" + userObj.getUsername() + "&&&\\*\\*\\*&&&", ""));
+						// query = session.createNativeQuery("UPDATE folder f
+						// set f.userName =: where username f.userName
+						// =:username");
+						// query.setString("username", folder.getUsername());
+						// query.executeUpdate();
 						session.update(folder);
-						
+
 					}
-					
-					
+
 				}
 				for (String folderId : userObj.getPermissonFolderID().split(",")) {
-					
-					folderId = folderId.substring(0,folderId.indexOf("%%$%%"));
+
+					folderId = folderId.substring(0, folderId.indexOf("%%$%%"));
 					int id = Integer.parseInt(folderId);
 
 					Folder folder = (Folder) session.get(Folder.class, id);
-					foldername+=folder.getLabel()+",";
+					foldername += folder.getLabel() + ",";
 					folder.setUsername(folder.getUsername() + "&&&***&&&" + userObj.getUsername() + "&&&***&&&");
 					session.update(folder);
 
 				}
 			}
-			if(foldername.length()>0){
-				if(foldername.endsWith(",")){
+			if (foldername.length() > 0) {
+				if (foldername.endsWith(",")) {
 					foldername = foldername.substring(0, foldername.lastIndexOf(","));
 				}
 				user.setPermissonFolderID(userObj.getPermissonFolderID());
@@ -144,7 +159,6 @@ public class DBUtil {
 			return null;
 		}
 	}
-
 
 	public boolean changePassword(ChangePassword changePasswordObj) {
 		Session session = HibernateUtil.getSession();
@@ -215,8 +229,7 @@ public class DBUtil {
 		try {
 			theString = IOUtils.toByteArray(is);
 			session = HibernateUtil.getSession();
-		
-			
+
 			trx = session.beginTransaction();
 			Query query = session.createNativeQuery("SELECT * FROM document d where d.name =:name and d.id =:folderId",
 					Document.class);
@@ -235,10 +248,10 @@ public class DBUtil {
 									// other table
 				trx.commit();
 				session.close();
-				theString=null;
-				file=null;
+				theString = null;
+				file = null;
 				IOUtils.closeQuietly(is);
-				docFolder=null;
+				docFolder = null;
 			} else {
 				trx.rollback();
 				;
@@ -257,7 +270,7 @@ public class DBUtil {
 		} finally {
 			try {
 				is.close();
-				
+
 				System.out.println("import content finally block called.");
 			} catch (IOException e) {
 			}
@@ -272,8 +285,8 @@ public class DBUtil {
 		Folder docFolder = new Folder();
 		docFolder.setLabel(docName);
 		docFolder.setParentid(folder.getParentid() + folder.getId());
-		if(!folder.getUsername().contains(folder.getUsername() + "&&&***&&&"))
-		docFolder.setUsername(folder.getUsername() + "&&&***&&&");
+		if (!folder.getUsername().contains(folder.getUsername() + "&&&***&&&"))
+			docFolder.setUsername(folder.getUsername() + "&&&***&&&");
 		docFolder.setProperties(documentProperties);
 		return docFolder;
 	}
@@ -284,15 +297,15 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			// trx = session.beginTransaction();
-			System.out.println("id-------"+id+" ---------"+filename);
+			System.out.println("id-------" + id + " ---------" + filename);
 			Query query = session.createNativeQuery("SELECT * FROM document d where d.name =:name and d.id =:folderId",
 					Document.class);
 			query.setString("name", filename);
 			query.setInteger("folderId", id);
 			List list = query.list();
-			System.out.println("list-------"+list);
+			System.out.println("list-------" + list);
 			Document doc = new Document();
-			if(list!=null && list.size()>0)
+			if (list != null && list.size() > 0)
 				doc = (Document) list.get(0);
 			trx.commit();
 			session.close();
@@ -317,7 +330,8 @@ public class DBUtil {
 		List<Folder> lst = null;
 		try {
 			if (isadmin)
-				query = session.createNativeQuery("SELECT * FROM folder f where f.isFolder=:isFolder order by name", Folder.class);
+				query = session.createNativeQuery("SELECT * FROM folder f where f.isFolder=:isFolder order by name",
+						Folder.class);
 			else {
 				query = session.createNativeQuery(
 						"SELECT * FROM folder f where f.isFolder=:isFolder and UPPER(userName) LIKE :userName or f.id=1000000 order by name",
@@ -337,13 +351,13 @@ public class DBUtil {
 				}
 				List<Folder> tempList = new ArrayList<Folder>();
 				for (Folder folder : lst) {
-					getAllParents(lst,tempList,session,folder);
-					
+					getAllParents(lst, tempList, session, folder);
+
 				}
 				lst.addAll(tempList);
-				
+
 			}
-			
+
 			trx.commit();
 			session.close();
 		} catch (Exception e) {
@@ -357,27 +371,27 @@ public class DBUtil {
 	}
 
 	private void getAllParents(List<Folder> lst, List<Folder> tempList, Session session, Folder folder) {
-		
-			if(folder.getId()!=1000000 && checkExists(lst,folder.getParentid())==0){
-				String parentid = folder.getParentid().substring(folder.getParentid().length()-7);
-				int pId = Integer.parseInt(parentid);
-				Folder flder = (Folder) session.get(Folder.class, pId);
-				if(!lst.contains(flder) && !tempList.contains(flder))
-					tempList.add(flder);
-				if(folder.getParentid().equalsIgnoreCase("1000000"))
-					return;
-				else
-					getAllParents(lst, tempList, session,flder);
-					
+
+		if (folder.getId() != 1000000 && checkExists(lst, folder.getParentid()) == 0) {
+			String parentid = folder.getParentid().substring(folder.getParentid().length() - 7);
+			int pId = Integer.parseInt(parentid);
+			Folder flder = (Folder) session.get(Folder.class, pId);
+			if (!lst.contains(flder) && !tempList.contains(flder))
+				tempList.add(flder);
+			if (folder.getParentid().equalsIgnoreCase("1000000"))
+				return;
+			else
+				getAllParents(lst, tempList, session, flder);
+
 		}
 	}
 
 	private int checkExists(List<Folder> lst, String parentid) {
-		parentid = parentid.substring(parentid.length()-7);
+		parentid = parentid.substring(parentid.length() - 7);
 		int pId = Integer.parseInt(parentid);
 		for (Folder folder : lst) {
-			
-			if(folder.getId()== pId)
+
+			if (folder.getId() == pId)
 				return pId;
 		}
 		return 0;
@@ -404,7 +418,7 @@ public class DBUtil {
 			query.setString("id", parentID);
 			lst = query.list();
 			Folder parentFolder = (Folder) lst.get(0);
-			folder.setUsername(parentFolder.getUsername()+ "&&&***&&&" + folder.getUsername() + "&&&***&&&");
+			folder.setUsername(parentFolder.getUsername() + "&&&***&&&" + folder.getUsername() + "&&&***&&&");
 
 			int abc = (Integer) session.save(folder);
 			session.flush();
@@ -459,16 +473,18 @@ public class DBUtil {
 			if (isadmin)
 				query = session.createNativeQuery("SELECT * FROM folder f where f.parentId = :parentId", Folder.class);
 			else {
-				int id = Integer.parseInt(folderId.substring(folderId.length()-7));
+				int id = Integer.parseInt(folderId.substring(folderId.length() - 7));
 
 				Folder folder = (Folder) session.get(Folder.class, id);
-				if(folder!=null && folder.getUsername().toUpperCase().contains( username.toUpperCase() + "&&&***&&&")){
-					query = session.createNativeQuery("SELECT * FROM folder f where f.parentId = :parentId", Folder.class);
-				}else{
-				query = session.createNativeQuery(
-						"SELECT * FROM folder f where f.parentId = :parentId  and  UPPER(userName) LIKE :userName",
-						Folder.class);
-				query.setString("userName", "%" + username.toUpperCase() + "&&&***&&&%");
+				if (folder != null
+						&& folder.getUsername().toUpperCase().contains(username.toUpperCase() + "&&&***&&&")) {
+					query = session.createNativeQuery("SELECT * FROM folder f where f.parentId = :parentId",
+							Folder.class);
+				} else {
+					query = session.createNativeQuery(
+							"SELECT * FROM folder f where f.parentId = :parentId  and  UPPER(userName) LIKE :userName",
+							Folder.class);
+					query.setString("userName", "%" + username.toUpperCase() + "&&&***&&&%");
 				}
 			}
 			query.setString("parentId", folderId);
@@ -531,30 +547,27 @@ public class DBUtil {
 		try {
 			Query query;
 
-			if (isadmin){
+			if (isadmin) {
 				Folder folder = (Folder) session.get(Folder.class, Integer.parseInt(folderId));
 				query = session.createNativeQuery("DELETE FROM folder WHERE id=:id OR parentId LIKE :parentId",
 						Folder.class);
 				query.setInteger("id", Integer.parseInt(folderId));
 				query.setString("parentId", parentId + folderId + "%");
 				result = query.executeUpdate();
-				if(!folder.isFolder()){
-				query = session.createNativeQuery("DELETE FROM document WHERE name=:name and parentId  =:parentId",
-						Document.class);
-				query.setString("name", folder.getLabel());
-				parentId = folder.getParentid().substring(0,folder.getParentid().length());
-				query.setString("parentId", folder.getParentid());
-				result = query.executeUpdate();
-				}else if(folder.isFolder()){
-					query = session.createNativeQuery("DELETE FROM document WHERE id  =:id",
+				if (!folder.isFolder()) {
+					query = session.createNativeQuery("DELETE FROM document WHERE name=:name and parentId  =:parentId",
 							Document.class);
+					query.setString("name", folder.getLabel());
+					parentId = folder.getParentid().substring(0, folder.getParentid().length());
+					query.setString("parentId", folder.getParentid());
+					result = query.executeUpdate();
+				} else if (folder.isFolder()) {
+					query = session.createNativeQuery("DELETE FROM document WHERE id  =:id", Document.class);
 					query.setInteger("id", Integer.parseInt(folderId));
 					result = query.executeUpdate();
-					}
-					
-				
-			}
-			else {
+				}
+
+			} else {
 				query = session.createNativeQuery(
 						"DELETE FROM folder WHERE id=:id OR parentId LIKE :parentId and UPPER(userName) =:username",
 						Folder.class);
@@ -570,7 +583,7 @@ public class DBUtil {
 				query.setString("parentId", parentId + folderId + "%");
 				result = query.executeUpdate();
 			}
-			
+
 			trx.commit();
 			session.close();
 		} catch (NumberFormatException e) {
@@ -679,29 +692,30 @@ public class DBUtil {
 				query.setString("details", "%" + searchString + "%");
 				query.setString("name", "%" + searchString + "%");
 			} else {
-				query = session.createNativeQuery("SELECT id FROM folder f where f.userName LIKE :username");
-				query.setString("username", "%&&&***&&&"+ username +"&&&***&&&%");
-				List<Integer> idList =query.list();
-				//constructing add condition
+				query = session.createNativeQuery("SELECT id FROM folder f where f.isFolder=true and f.userName LIKE :username");
+				query.setString("username", "%&&&***&&&" + username + "&&&***&&&%");
+				List<Integer> idList = query.list();
+				// constructing add condition
 				String andCondition = "";
-				for (int i = 0;i< idList.size();i++) {
-					andCondition+="parentId like '%"+idList.get(i)+"%'";
-					if(i < idList.size()-1)
-						andCondition+=" or ";
+				System.out.println("idList ---"+idList.size());
+				for (int i = 0; i < idList.size(); i++) {
+					andCondition += "parentId like '%" + idList.get(i) + "%'";
+					if (i < idList.size() - 1)
+						andCondition += " or ";
 				}
-				
-				String queryString  = 
-						"SELECT * FROM folder f where f.isFolder=false and (f.details LIKE :details or f.name LIKE :name)";
-				if(andCondition != null && andCondition.length()>0)
-					queryString+= "and ("+ andCondition+" )";
-						
-				query = session.createNativeQuery(queryString,Folder.class);
+
+				String queryString = "SELECT * FROM folder f where f.isFolder=false and (f.details LIKE :details or f.name LIKE :name)";
+				if (andCondition != null && andCondition.length() > 0)
+					queryString += "and (" + andCondition + " )";
+
+				query = session.createNativeQuery(queryString, Folder.class);
 				query.setString("details", "%" + searchString + "%");
 				query.setString("name", "%" + searchString + "%");
 			}
 
 			// query.setBoolean("isFolder", true);
 			lst = query.list();
+			System.out.println("search result list size "+lst.size());
 			// if (!isadmin) {
 			// for (Folder folderObj : lst) {
 			// if (folderObj.getId() != 1000000) {
@@ -730,7 +744,7 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			;
-//			Transaction t = session.beginTransaction();
+			// Transaction t = session.beginTransaction();
 			Query query = session.createNativeQuery("SELECT * FROM user where emailAddress =:emailAddress", User.class);
 			query.setString("emailAddress", emailAddress);
 			List<User> lst = query.list();
@@ -757,15 +771,15 @@ public class DBUtil {
 		Query query = null;
 		int result = 0;
 		try {
-				query = session.createNativeQuery(
-						"update folder f set f.details =:properties where f.parentId=:parentId and f.name =:name",
-						Folder.class);
-				query.setString("properties", properties);
-				query.setString("parentId", docId);
-				query.setString("name", docName);
+			query = session.createNativeQuery(
+					"update folder f set f.details =:properties where f.parentId=:parentId and f.name =:name",
+					Folder.class);
+			query.setString("properties", properties);
+			query.setString("parentId", docId);
+			query.setString("name", docName);
 
-				result = query.executeUpdate();
-			
+			result = query.executeUpdate();
+
 			trx.commit();
 			session.close();
 		} catch (Exception e) {
@@ -778,49 +792,50 @@ public class DBUtil {
 		}
 		return result;
 	}
-	
+
 	public Folder getFolder(String path) {
 		path = path.replace("\\", "/");
 		String pathAarray[] = path.split("/");
-		String parentId ="NULL";
+		String parentId = "NULL";
 		Folder folder = null;
 		for (String pathName : pathAarray) {
-			folder = getFolderWithPath(pathName,parentId);
-			if(parentId.equalsIgnoreCase("NULL"))
-			parentId = folder.getId()+"";
+			folder = getFolderWithPath(pathName, parentId);
+			if (parentId.equalsIgnoreCase("NULL"))
+				parentId = folder.getId() + "";
 			else
-				parentId = parentId+folder.getId();
+				parentId = parentId + folder.getId();
 		}
 		return folder;
-		
+
 	}
 
 	private Folder getFolderWithPath(String path, String parentId) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
-		try{
+		try {
 			Query query = null;
 			List<Folder> lst = null;
-			query = session.createNativeQuery("SELECT * FROM folder f where f.name =:path  and f.parentId LIKE :parentId",Folder.class);
+			query = session.createNativeQuery(
+					"SELECT * FROM folder f where f.name =:path  and f.parentId LIKE :parentId", Folder.class);
 			query.setString("path", path);
 			query.setString("parentId", parentId);
 			lst = query.list();
 
-		Folder folder = lst.get(0);
-		trx.commit();
-		session.close();
-		return folder;
-	} catch (Exception exception) {
-		System.out.println("Exception occred while getFolder: " + exception.getMessage());
-		if (trx != null)
-			trx.rollback();
-		if (session != null)
+			Folder folder = lst.get(0);
+			trx.commit();
 			session.close();
-		return null;
-	} finally {
+			return folder;
+		} catch (Exception exception) {
+			System.out.println("Exception occred while getFolder: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally {
 
-	}
-		
+		}
+
 	}
 
 	public User getUser(String username) {
@@ -828,10 +843,10 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			User user = (User) session.get(User.class, username);
-			
-				trx.commit();
-				session.close();
-				return user;
+
+			trx.commit();
+			session.close();
+			return user;
 
 		} catch (Exception exception) {
 			System.out.println("Exception occred while login: " + exception.getMessage());
@@ -843,7 +858,7 @@ public class DBUtil {
 		} finally {
 
 		}
-		
+
 	}
 
 }
