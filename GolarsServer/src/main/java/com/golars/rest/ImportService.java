@@ -1,6 +1,7 @@
 package com.golars.rest;
 
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.Random;
 
 import javax.ws.rs.Consumes;
@@ -61,7 +62,7 @@ public class ImportService {
 																						// your
 																						// file
 				.header("Content-type:", generateContentType(doc.getFilename()))
-				.header("content-disposition", "inline; filename = " + doc.getFilename()).build();
+				.header("content-disposition", "inline; filename = " + URLEncoder.encode(doc.getFilename())).build();
 	}
 
 	private String generateContentType(String filename) {
