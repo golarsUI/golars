@@ -52,10 +52,10 @@
     <div class="ui-g-8">{{docData.scopeOfWork}}</div>
   </div>
   <div class="ui-g" *ngIf="!folderSelected">
-      <div class="ui-g-4">URL</div>
-      <div class="ui-g-7 wrap-text"><a href="#" data-toggle="modal"  data-target="#contentModal" (click)="renderIframe=true">{{docURL}}</a></div>
+      <div class="ui-g-3">URL</div>
       <div class="ui-g-1" > <i [ngStyle]="{'color':copyclicked === true ? '#FF8C86' : '#89E093' }" (click)="copyclicked=true;copyButtontitle='Copied'" class="fa fa-clipboard" 
-        aria-hidden="true"  ngxClipboard [cbContent]="docURL" style="cursor: pointer;font-size:30px" [title]="copyButtontitle"></i></div>
+        aria-hidden="true"  ngxClipboard [cbContent]="docURL" style="cursor: pointer;font-size:25px" [title]="copyButtontitle"></i></div>
+      <div class="ui-g-8 wrap-text"><a href="#" data-toggle="modal"  data-target="#contentModal" (click)="renderIframe=true">{{docURL}}</a></div>
     </div>
   
 
