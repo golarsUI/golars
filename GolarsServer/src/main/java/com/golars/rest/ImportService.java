@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 
 import com.golars.bean.Document;
 import com.golars.bean.Folder;
+import com.golars.bean.UserSettings;
 import com.golars.util.DBUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -31,10 +32,11 @@ public class ImportService {
 
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
+
 	public Response uploadFile(@FormDataParam("fileUpload") FormDataBodyPart body,
 			@FormDataParam("docProperties") String documentProperties,
 			@FormDataParam("folderProperties") String folderProperties) {
-		boolean result = false;
+		String result = null;
 
 		for (BodyPart part : body.getParent().getBodyParts()) {
 
@@ -44,10 +46,19 @@ public class ImportService {
 				String fileName = getFileExtension(meta.getFileName()).equalsIgnoreCase("")
 						?gen()+".pdf" : meta.getFileName();
 				Folder folder = new Gson().fromJson(folderProperties, Folder.class);
+				if(folder == null){
+					folder = DBUtil.getInstance().getFolder("root\\indiana\\NotificationFiles");
+				}
 				result = DBUtil.getInstance().saveDocument(is, fileName, documentProperties, folder);
 			}
 		}
-		return Response.status(200).entity(result).build();
+		if(result!=null){
+			UserSettings keyvalue = new UserSettings();
+			keyvalue.setKey("fileName");
+			keyvalue.setValue(result);
+			return Response.ok(keyvalue).build();
+		}
+		return Response.ok(result).build();
 	}
 
 	@Path("{id}/{filename}")

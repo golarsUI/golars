@@ -2,6 +2,7 @@ package com.golars.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -221,11 +222,12 @@ public class DBUtil {
 		return lst;
 	}
 
-	public boolean saveDocument(InputStream is, String fileName, String documentProperties, Folder folder) {
+	public String saveDocument(InputStream is, String fileName, String documentProperties, Folder folder) {
 		Session session = null;
 		byte[] theString;
 		Transaction trx = null;
 		Document file = new Document();
+		String filePath;
 		try {
 			theString = IOUtils.toByteArray(is);
 			session = HibernateUtil.getSession();
@@ -238,6 +240,7 @@ public class DBUtil {
 			List list = query.list();
 			// Object doc = session.get(Document.class, file.getFilename());
 			if (list.size() == 0) {
+				fileName = URLEncoder.encode(fileName);
 				file.setFilename(fileName);
 				file.setContent(theString);
 				file.setFolderId(folder.getId());
@@ -248,6 +251,7 @@ public class DBUtil {
 									// other table
 				trx.commit();
 				session.close();
+				filePath = folder.getId()+"/"+fileName;
 				theString = null;
 				file = null;
 				IOUtils.closeQuietly(is);
@@ -256,9 +260,9 @@ public class DBUtil {
 				trx.rollback();
 				;
 				session.close();
-				return false;
+				return null;
 			}
-			return true;
+			return filePath;
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			System.out.println("Exception occred while saveDocument: " + exception.getMessage());
@@ -266,7 +270,7 @@ public class DBUtil {
 				trx.rollback();
 			if (session != null)
 				session.close();
-			return false;
+			return null;
 		} finally {
 			try {
 				is.close();
