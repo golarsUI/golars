@@ -165,7 +165,7 @@ const frmData = new FormData();
     .subscribe(
         message => {
           // console.log(message)
-          if(message == true){
+          if (message != null) {
           this.showSuccessMessage=true;
           this.successMessage = "File(s) Imported Successfully !!";
           this.fileInput.files=[];

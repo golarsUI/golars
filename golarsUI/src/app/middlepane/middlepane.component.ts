@@ -83,6 +83,7 @@ export class MiddlepaneComponent implements OnInit {
       if (data[i].folder == true)
         continue;
       data[i].properties = JSON.parse(data[i].properties);
+      if(data[i].properties == null)continue;
       if(data[i].properties.docUpdateDate!=null){
         data[i].properties.docUpdateDate = this.commonService.getFormatteDate(data[i].properties.docUpdateDate);
         
