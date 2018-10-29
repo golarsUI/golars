@@ -19,10 +19,6 @@
     <div class="ui-g-4">Facility Name</div>
     <div class="ui-g-8">{{docData.fecilityName}}</div>
   </div>
-  <div class="ui-g" *ngIf="docData.facilityName">
-    <div class="ui-g-4">Facility Name</div>
-    <div class="ui-g-8">{{docData.facilityName}}</div>
-  </div>
   <div class="ui-g" *ngIf="docData.docDate">
     <div class="ui-g-4">Document Date</div>
     <div class="ui-g-8">{{commonService.getFormatteDate(docData.docDate)}}</div>
