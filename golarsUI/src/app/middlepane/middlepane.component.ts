@@ -91,6 +91,8 @@ export class MiddlepaneComponent implements OnInit {
       if(data[i].properties.docDate!=null){
         data[i].properties.docDate = this.commonService.getFormatteDate(data[i].properties.docDate);
       }
+      if(data[i].properties.facilityName != null)
+      data[i].properties.fecilityName = data[i].properties.facilityName;
       data[i].properties.fid = this.commonService.getFID(data[i].properties.fid);
     }
     return data;
