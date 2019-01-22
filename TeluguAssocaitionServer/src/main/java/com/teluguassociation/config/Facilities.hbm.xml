@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.customerportal.bean.Facilities" table="Facility_Management__c">
+		<id name="id">
+			<column name="Id" />
+		</id>
+		<property name="contact" column="Contact__c" />
+		<property name="city" column="City__c" />
+		<property name="state" column="State__c" />
+		<property name="street" column="Street__c" />
+		<property name="address" column="Facility_Address__c" />
+		<property name="company" column="Company__c" />
+		<property name="facilityId" column="Facility__c" />
+		<property name="fid" column="FID__c" />
+		<property name="tankPaidService" column="Golars_Tank_Paid_Service__c" />
+		<property name="name" column="Facility_Name__c" />
+		<property name="brand" column="Facility_Brand__c" />
+		<property name="paidService" column="USSBOA_Paid_Service__c" />
+		<property name="compliance" column="Compliant__c" />
+		<property name="projectManagerPhone" column="GT_Project_Manager_Phone__c" />
+		<property name="projectManager" column="GT_Project_Manager__c" />
+
+	</class>
+</hibernate-mapping>
