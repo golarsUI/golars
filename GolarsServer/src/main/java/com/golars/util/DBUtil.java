@@ -6,12 +6,14 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.golars.bean.Account;
 import com.golars.bean.ChangePassword;
 import com.golars.bean.Document;
 import com.golars.bean.Folder;
@@ -239,16 +241,18 @@ public class DBUtil {
 			query.setInteger("folderId", folder.getId());
 			List list = query.list();
 			// Object doc = session.get(Document.class, file.getFilename());
-			if (list.size() == 0) {
-				fileName = URLEncoder.encode(fileName);
-				file.setFilename(fileName);
-				file.setContent(theString);
-				file.setFolderId(folder.getId());
-				file.setParentId(folder.getParentid() + folder.getId());
-				Folder docFolder = createDocFolder(folder, fileName, documentProperties);
-				session.save(docFolder);// saving doc in folder table
-				session.save(file);// save doc content in
-									// other table
+			
+			 fileName = URLEncoder.encode(fileName);
+		      if (list.size() > 0) {
+		        fileName = generateFileName(fileName);
+		      }
+		      file.setFilename(fileName);
+		      file.setContent(theString);
+		      file.setFolderId(folder.getId());
+		      file.setParentId(folder.getParentid() + folder.getId());
+		      Folder docFolder = createDocFolder(folder, fileName, documentProperties);
+		      session.save(docFolder);
+		      session.save(file);
 				trx.commit();
 				session.close();
 				filePath = folder.getId()+"/"+fileName;
@@ -256,12 +260,7 @@ public class DBUtil {
 				file = null;
 				IOUtils.closeQuietly(is);
 				docFolder = null;
-			} else {
-				trx.rollback();
-				;
-				session.close();
-				return null;
-			}
+			
 			return filePath;
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -284,7 +283,18 @@ public class DBUtil {
 		// TODO Auto-generated method stub
 
 	}
-
+	  private String generateFileName(String fileName)
+	  {
+	    String ext = fileName.substring(fileName.lastIndexOf("."));
+	    fileName = fileName.replace(ext, gen() + ext);
+	    return fileName;
+	  }
+	  
+	  public int gen()
+	  {
+	    Random r = new Random(System.currentTimeMillis());
+	    return r.nextInt(200000);
+	  }
 	private Folder createDocFolder(Folder folder, String docName, String documentProperties) {
 		Folder docFolder = new Folder();
 		docFolder.setLabel(docName);
@@ -854,6 +864,35 @@ public class DBUtil {
 
 		} catch (Exception exception) {
 			System.out.println("Exception occred while login: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally {
+
+		}
+
+	}
+	
+	public String checkFidExists(String fid) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			Query query = null;
+			List<Account> lst = null;
+			query = session.createNativeQuery(
+					"SELECT * FROM Account a where a.fid__C ="+fid, Account.class);
+			lst = query.list();
+			trx.commit();
+			session.close();
+			if(lst != null && lst.size()>0){
+				Account account = lst.get(0);
+				return account.getId();
+			}
+			return null;
+		} catch (Exception exception) {
+			System.out.println("Exception occred while getFolder: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();
 			if (session != null)

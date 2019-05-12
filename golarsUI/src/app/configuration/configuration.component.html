@@ -37,7 +37,7 @@
         <div class="ui-g">
           <div class="ui-g-6">
             <div>
-              <p-table [columns]="stateProgramCols" [value]="statePrograTableValues">
+              <p-table [columns]="stateProgramCols" [value]="statePrograTableValues"  [scrollable]="true" scrollHeight="300px">
                 <ng-template pTemplate="header" let-columns>
                   <tr>
                     <th *ngFor="let col of columns">
@@ -73,7 +73,7 @@
       </p-tabPanel>
       <p-tabPanel header="Document Type">
         <!-- <div *ngIf="dropDownValue=='Document Type'"> -->
-        <p-table [columns]="docTypeTableCols" [value]="docTypeTableValues" [paginator]="true" [rows]="10">
+        <p-table [columns]="docTypeTableCols" [value]="docTypeTableValues" [paginator]="true" [rows]="10" [scrollable]="true" scrollHeight="300px">
           <ng-template pTemplate="header" let-columns>
             <tr>
               <th width="200px">StateProgram</th>
@@ -111,7 +111,7 @@
       </p-tabPanel>
       <p-tabPanel header="Scope of Work">
         <!-- <div *ngIf="dropDownValue=='Scope of Work'"> -->
-        <p-table [columns]="docTypeTableCols" [value]="scopeOfWorkTableValues" [paginator]="true" [rows]="10">
+        <p-table [columns]="docTypeTableCols" [value]="scopeOfWorkTableValues" [paginator]="true" [rows]="10" [scrollable]="true" scrollHeight="300px">
           <ng-template pTemplate="header" let-columns>
             <tr>
               <th width="200px">StateProgram</th>
@@ -147,6 +147,45 @@
         </div>
         <!-- </div>     -->
       </p-tabPanel>
+      <p-tabPanel header="Compliance Document Type">
+        <!-- <div class="ui-g" *ngIf="dropDownValue=='State Program'"> -->
+        <div class="ui-g">
+          <div class="ui-g-6">
+            <div>
+              <p-table [columns]="complianceDocTypeCols" [value]="complianceDocTypeTableValues" [scrollable]="true" scrollHeight="300px">
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th *ngFor="let col of columns">
+                      {{col.header}}
+                    </th>
+                    <th width="100px">
+                      Action
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-tableData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr>
+                    <td *ngFor="let col of columns">
+                      <div [ngClass]="tableData[col.field].enable === true ? 'enable-text' : 'disable-text'" (click)="complianceTdClickced(tableData[col.field],$event)"
+                        [title]="getTableTooltip(tableData[col.field].enable)">{{tableData[col.field].label}}</div>
+                    </td>
+                    <td style="text-align: center">
+                      <i class="fa fa-trash" style="font-size:20px;cursor: pointer;" (click)="deleteRowData(tableData)" title="Delete"></i>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            <div class="ui-g  pull-right">
+              <div class="ui-g-12">
+                <button type="button" class="btn btn-primary" (click)="saveSateProgramPreferences()">Save</button>
+                <button type="button" class="btn btn-secondary">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- </div> -->
+      </p-tabPanel>
     </p-tabView>
 <div *ngIf="selectedIndex > 0">
 
@@ -158,7 +197,7 @@
           <label>Select Option to add Picklist</label>
         </div>
         <div class="ui-g-6">
-          <p-dropdown [options]="dropdownOptions" [(ngModel)]="dropDownValue" name="dropdownOptions" (onChange)="changeTextAreaHeading($event)" [style]="{'width':'200px'}"></p-dropdown>
+          <p-dropdown [options]="dropdownOptions" [(ngModel)]="dropDownValue" name="dropdownOptions" (onChange)="changeTextAreaHeading($event)" [style]="{'width':'300px'}"></p-dropdown>
         </div>
       </div>
     
@@ -170,7 +209,7 @@
           <label>{{textAreaTitle}}</label>
         </div>
         <div class="ui-g-6">
-          <textarea [rows]="10" [cols]="30" [(ngModel)]="pickListValue" style="height:120px !important;width:200px !important;resize: none"
+          <textarea [rows]="10" [cols]="30" [(ngModel)]="pickListValue" style="height:120px !important;width:300px !important;resize: none"
             pInputTextarea placeholder="Enter Values to be added in separate line"></textarea>
           <div class="ui-g-6">
           </div>

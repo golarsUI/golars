@@ -13,16 +13,19 @@ export class ConfigurationComponent implements OnInit {
   constructor(private commonService: CommonService, private folderService: FolderService) { }
   docTypeTableCols = [];
   stateProgramCols = [];
+  complianceDocTypeCols=[];
   docTypeTableValues = [];
   scopeOfWorkTableValues = [];
   showSuccessMessage = false;
   successMessage = null;
   statePrograTableValues = []
+  complianceDocTypeTableValues = []
   dropDownValue = "State Program";
   dropdownOptions;
   textAreaTitle = "Add Picklist for State Program";
   pickListValue = "";
   stateProgram = ImportFieldValues.stateProgramMapping;
+  compliaceDocTypes = ImportFieldValues.compliaceDocumentType;
   stateProgramMappingForDocumentType = ImportFieldValues.stateProgramMappingForDocumentType;
   stateProgramMappingForScopeOfWork = ImportFieldValues.stateProgramMappingForScopeOfWork;
   stateProgramproeprties = [];
@@ -39,19 +42,22 @@ export class ConfigurationComponent implements OnInit {
   generateConfigurationData() {
     this.docTypeTableCols = [];
     this.statePrograTableValues = [];
+    this.complianceDocTypeTableValues=[];
     this.stateProgramCols = [];
+    this.complianceDocTypeCols=[];
     this.docTypeTableValues = [];
     this.scopeOfWorkTableValues = []
     this.stateProgram = this.commonService.getStateProgramPreferences();
     this.stateProgramMappingForDocumentType = this.commonService.getDocumentTypePreferences();
     this.stateProgramMappingForScopeOfWork = this.commonService.getScopeOfWorkPreferences();
+    this.compliaceDocTypes = this.commonService.getComplianceDocTypePreferences();
     if (this.commonService.getScopeOfWorkPreferences() != null)
       for (var i = 0; i < this.stateProgram.length; i++) {
         this.docTypeTableCols.push({ field: this.stateProgram[i].label, header: this.stateProgram[i].value })
       }
 
     this.stateProgramCols.push({ field: "State Program", header: "State Program" })
-
+    this.complianceDocTypeCols.push({ field: "Compliance Document Type", header: "Compliance Document Type" })
 
     this.loadDocTypeTableData();
 
@@ -63,6 +69,14 @@ export class ConfigurationComponent implements OnInit {
         this.statePrograTableValues[i][this.stateProgramCols[colIndex].field] = { label: this.stateProgram[i].label, enable: this.stateProgram[i].enable };
       }
     }
+//compliance document type
+for (var colIndex = 0; colIndex < this.complianceDocTypeCols.length; colIndex++) {
+  for (var i = 0; i < this.compliaceDocTypes.length; i++) {
+
+    this.complianceDocTypeTableValues.push({});
+    this.complianceDocTypeTableValues[i][this.complianceDocTypeCols[colIndex].field] = { label: this.compliaceDocTypes[i].label, enable: this.compliaceDocTypes[i].enable };
+  }
+}
 
     this.loadScopeOfWorkTableData();
 
@@ -71,6 +85,7 @@ export class ConfigurationComponent implements OnInit {
       { label: 'State Program', value: 'State Program' },
       { label: 'Document Type', value: 'Document Type' },
       { label: 'Scope of Work', value: 'Scope of Work' },
+      { label: 'Compliance Document Type', value: 'Compliance Document Type' },
     ];
   }
   getStateProgramMap(label) {
@@ -86,6 +101,18 @@ export class ConfigurationComponent implements OnInit {
 
   }
 
+  complianceTdClickced(tdData, $event) {
+    console.log(tdData, $event)
+    tdData.enable = !tdData.enable;
+    this.modifyCompliaceModelValue(tdData)
+  }
+  modifyCompliaceModelValue(tdData) {
+    if (this.dropDownValue == 'Compliance Document Type') {
+      for (var i = 0; i < this.compliaceDocTypes.length; i++)
+        if (this.compliaceDocTypes[i].label == tdData.label)
+          this.compliaceDocTypes[i].enable = tdData.enable;
+    }
+  }
   tdClickced(tdData, $event) {
     console.log(tdData, $event)
     tdData.enable = !tdData.enable;
@@ -136,6 +163,8 @@ export class ConfigurationComponent implements OnInit {
     this.selectedIndex = 2;
     if($event.value == 'Scope of Work')
     this.selectedIndex = 3;
+    if($event.value == 'Compliance Document Type')
+    this.selectedIndex = 4;
     this.pickListValue = "";
     console.log($event)
     this.  showSuccessMessage = false;
@@ -154,7 +183,16 @@ export class ConfigurationComponent implements OnInit {
         } else {
           this.stateProgram[this.stateProgram.length - 1].enable = true;
         }
-      } else if (this.dropDownValue == 'Document Type') {
+      } if (this.dropDownValue == 'Compliance Document Type') {
+        if (!this.notPresentInComplaceDocTypeTableData(this.complianceDocTypeTableValues, arr[i])) {
+          this.complianceDocTypeTableValues.push({});
+          this.complianceDocTypeTableValues[this.complianceDocTypeTableValues.length - 1][this.complianceDocTypeCols[0].field] = { label: arr[i], enable: false };
+          this.compliaceDocTypes.push({ label: arr[i], value: arr[i], enable: false })
+          // this.stateProgram[this.stateProgram.length][this.stateProgramCols[0].field] = { label: arr[i], enable: false };
+        } else {
+          this.stateProgram[this.stateProgram.length - 1].enable = true;
+        }
+      }else if (this.dropDownValue == 'Document Type') {
         this.docTypeTableValues = [];
         for (var colIndex = 0; colIndex < this.docTypeTableCols.length; colIndex++) {
           var col = this.docTypeTableCols[colIndex];
@@ -245,6 +283,18 @@ export class ConfigurationComponent implements OnInit {
 
 
   }
+  notPresentInComplaceDocTypeTableData(data, searchString) {
+    for (var i = 0; i < data.length; i++) {
+      if (data[i][this.complianceDocTypeCols[0].field].label == searchString) {
+        data[i][this.complianceDocTypeCols[0].field].enable = true;
+        return true;
+      }
+
+    }
+    return false;
+
+
+  }
 
   saveSateProgramPreferences() {
     this.preferencesData = [];
@@ -293,6 +343,7 @@ export class ConfigurationComponent implements OnInit {
     this.preferencesData.push({ key: "stateProgramPreferences", value: JSON.stringify(this.stateProgram) });
     this.preferencesData.push({ key: "docTypePreferences", value: JSON.stringify(this.stateProgramMappingForDocumentType) });
     this.preferencesData.push({ key: "scopeOfWorkPreferences", value: JSON.stringify(this.stateProgramMappingForScopeOfWork) });
+    this.preferencesData.push({ key: "compliaceDocTypePreferences", value: JSON.stringify(this.compliaceDocTypes) });
 
     console.log(this.preferencesData);
     this.folderService.saveTablePreferences(this.preferencesData)
@@ -358,6 +409,11 @@ export class ConfigurationComponent implements OnInit {
       this.scopeOfWorkTableValues.splice(index, 1)
       for (var i = 0; i < this.stateProgramMappingForScopeOfWork.length; i++)
         this.stateProgramMappingForScopeOfWork[i].properties.splice(index, 1);
+    }else  if (this.dropDownValue == 'Compliance Document Type') {
+      console.log(this.complianceDocTypeTableValues.indexOf(trData))
+      var index = this.complianceDocTypeTableValues.indexOf(trData);
+      this.complianceDocTypeTableValues.splice(index, 1)
+      this.compliaceDocTypes.splice(index, 1)
     }
 
   }

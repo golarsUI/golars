@@ -14,6 +14,7 @@
 		<property name="hbm2ddl.auto">update</property>
 		<property name="connection.pool_size">100</property>
 		<mapping resource="com/golars/config/User.hbm.xml" />
+		<mapping resource="com/golars/config/Account.hbm.xml" />
 		<mapping resource="com/golars/config/document.hbm.xml" />
 		<mapping resource="com/golars/config/Folder.hbm.xml" />
 		<mapping resource="com/golars/config/userSettings.hbm.xml" />

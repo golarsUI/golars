@@ -31,7 +31,24 @@
       <label>FID</label>
       <input id="fid" type="text" class="form-control form-control-height" pInputText [(ngModel)]="model.fid" name="fid" />
     </div>
-
+    <div class="ui-g-12 ui-md-6">
+      <div>
+        <label>&nbsp;</label>
+      </div>
+      <p-checkbox name="model.facilityRelated" binary="true" #facilityRelatedCheckbox label="Not Faccility Related" [(ngModel)]="model.facilityRelated"></p-checkbox>
+    </div>
+    <div class="ui-g-12 ui-md-6">
+      <div>
+        <label>Compliance Document Type</label>
+      </div>
+      <p-dropdown [options]="compliaceDocumentTypes" [(ngModel)]="model.compliaceDocumentType" name="model.compliaceDocumentType" placeholder="Select Compliance Document Type"
+        [style]="{'width':'100%'}"></p-dropdown>
+    </div>
+    <div class="ui-g-12 ui-md-12">
+      <label>Description</label>
+      <textarea id="description"  class="form-control textarea-ui-inputtext" [rows]="2" pInputTextarea [(ngModel)]="model.description" name="description"
+        maxlength="500" ></textarea>
+    </div>
     <div class="ui-g-12 ui-md-6">
       <label>Street</label>
       <input id="street" type="text" class="form-control form-control-height" pInputText [(ngModel)]="model.street" name="street"
@@ -46,7 +63,7 @@
         <label>State Program</label>
       </div>
       <p-dropdown [options]="stateProgram" [(ngModel)]="model.stateProgram" name="model.stateProgram" placeholder="Select State Program"
-        [style]="{'width':'200px'}" (onChange)="getStateProgramAndScopeOfWorkDropDOwn($event)"></p-dropdown>
+      [style]="{'width':'100%'}" (onChange)="getStateProgramAndScopeOfWorkDropDOwn($event)"></p-dropdown>
     </div>
     <div class="ui-g-12 ui-md-6">
       <div>
@@ -58,14 +75,14 @@
       <div>
         <label>Document Type</label>
       </div>
-      <p-dropdown [options]="docTypes" [(ngModel)]="model.docTypes" name="docTypes" placeholder="Select Document Type" [style]="{'width':'275px'}"></p-dropdown>
+      <p-dropdown [options]="docTypes" [(ngModel)]="model.docTypes" name="docTypes" placeholder="Select Document Type"  [style]="{'width':'100%'}"></p-dropdown>
     </div>
     <div class="ui-g-12 ui-md-6">
       <div>
         <label>Scope of Work</label>
       </div>
       <p-multiSelect [options]="scopeOfWork" defaultLabel="Select Scope of Work" [(ngModel)]="model.scopeOfWork" name="scopeOfWork"
-        resetFilterOnHide="true" [style]="{'width':'350px','min-height':'30px'}"></p-multiSelect>
+        resetFilterOnHide="true" [style]="{'width':'100%','min-height':'30px'}"></p-multiSelect>
     </div>
   </div>
   <div [hidden]='!showFileSelectErrorMessage' class="alert alert-danger" role="alert">

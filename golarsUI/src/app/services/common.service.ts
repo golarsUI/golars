@@ -76,6 +76,12 @@ export class CommonService {
 
       return ImportFieldValues.stateProgramMappingForScopeOfWork;
   }
+  getComplianceDocTypePreferences(){
+    if(localStorage.getItem("compliaceDocTypePreferences")!==null && localStorage.getItem("compliaceDocTypePreferences")!=="")
+    return JSON.parse(localStorage.getItem("compliaceDocTypePreferences"));
+
+      return ImportFieldValues.compliaceDocumentTypes;
+  }
   getLoginContentURL(){
     if(localStorage.getItem("loginContentURL")!==null && localStorage.getItem("loginContentURL")!=="")
     return localStorage.getItem("loginContentURL");

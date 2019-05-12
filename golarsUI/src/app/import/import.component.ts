@@ -21,6 +21,7 @@ export class ImportComponent implements OnInit {
   docTypes=[];
   docTypesFullList = ImportFieldValues.docTypeMapping;
   stateProgram= ImportFieldValues.stateProgramMapping;
+  compliaceDocumentTypes = ImportFieldValues.compliaceDocumentTypes;
   scopeOfWork = [];
   scopeOfWorkFullList = ImportFieldValues.scopeOfWorkMapping;
   stateProgramMappingForDocumentType = ImportFieldValues.stateProgramMappingForDocumentType;
@@ -73,6 +74,7 @@ defaultdate;
     var stateProgramValues = self.commonService.getStateProgramPreferences();
     self.stateProgramMappingForDocumentType = self.commonService.getDocumentTypePreferences();
     self.stateProgramMappingForScopeOfWork = self.commonService.getScopeOfWorkPreferences();
+    self.compliaceDocumentTypes   = self.commonService.getComplianceDocTypePreferences();
     for(var i=0;i<stateProgramValues.length;i++){
       if(stateProgramValues[i].enable)
       self.stateProgram.push(stateProgramValues[i]);
@@ -108,6 +110,8 @@ this.model.docUpdateDate = new Date();
     this.getStateProgramAndScopeOfWorkDropDOwn(null)
     this.model.active = docData.properties.active;
     this.model.docTypes = docData.properties.docTypes;
+     this.model.facilityRelated = docData.properties.facilityRelated;
+    this.model.compliaceDocumentType = docData.properties.compliaceDocumentType;
     if(docData.properties.scopeOfWork != null && docData.properties.scopeOfWork.length>0 && docData.properties.scopeOfWork.indexOf(';')>0)
       this.constructScopeOfWorkArray(docData.properties.scopeOfWork);
     else if(docData.properties.scopeOfWork != null && Array.isArray(docData.properties.scopeOfWork))
@@ -161,11 +165,20 @@ const frmData = new FormData();
     frmData.append("folderProperties",this.getFolderDetails());
     // frmData.set("documentProperties",this.getDocumentProperties())
     this.disableImportButton = true;
+    this.showFileSelectErrorMessage=false;
+    this.showSuccessMessage=false;
     this.importService.importDocuments(frmData)
     .subscribe(
         message => {
           // console.log(message)
-          if (message != null) {
+          //check for fid error
+          if( message!= null && message.key != null && message.key == "fid" && message.value=="notexits"){
+            this.showFileSelectErrorMessage=true;
+            this.fileSelectErrorMessage="FID doesn't exists.";
+            this.disableImportButton = false; 
+            return;
+          }
+          if(message != null){
           this.showSuccessMessage=true;
           this.successMessage = "File(s) Imported Successfully !!";
           this.fileInput.files=[];

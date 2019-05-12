@@ -18,6 +18,7 @@ import com.golars.bean.Document;
 import com.golars.bean.Folder;
 import com.golars.bean.UserSettings;
 import com.golars.util.DBUtil;
+import com.golars.util.GolarsUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.sun.jersey.core.header.ContentDisposition;
@@ -50,6 +51,49 @@ public class ImportService {
 					folder = DBUtil.getInstance().getFolder("root\\indiana\\NotificationFiles");
 				}
 				result = DBUtil.getInstance().saveDocument(is, fileName, documentProperties, folder);
+			}
+		}
+		if(result!=null){
+			UserSettings keyvalue = new UserSettings();
+			keyvalue.setKey("fileName");
+			keyvalue.setValue(result);
+			return Response.ok(keyvalue).build();
+		}
+		return Response.ok(result).build();
+	}
+	
+	@POST
+	@Path("/new")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+
+	public Response uploadFileLatest(@FormDataParam("fileUpload") FormDataBodyPart body,
+			@FormDataParam("docProperties") String documentProperties,
+			@FormDataParam("folderProperties") String folderProperties) {
+		String result = null;
+		String accountId = 	GolarsUtil.checkFIDExists(documentProperties);
+		if(accountId == null){
+			UserSettings keyvalue = new UserSettings();
+			keyvalue.setKey("fid");
+			keyvalue.setValue("notexits");
+			return Response.ok(keyvalue).build();
+		}
+		
+
+		for (BodyPart part : body.getParent().getBodyParts()) {
+
+			InputStream is = part.getEntityAs(InputStream.class);
+			ContentDisposition meta = part.getContentDisposition();
+			if (meta.getFileName() != null) {
+				String fileName = getFileExtension(meta.getFileName()).equalsIgnoreCase("")
+						?gen()+".pdf" : meta.getFileName();
+				Folder folder = new Gson().fromJson(folderProperties, Folder.class);
+				if(folder == null){
+					folder = DBUtil.getInstance().getFolder("root\\indiana\\NotificationFiles");
+				}
+				result = DBUtil.getInstance().saveDocument(is, fileName, documentProperties, folder);
+				if(result != null && accountId != null && !accountId.equalsIgnoreCase("ignore"))
+					GolarsUtil.saveDocumentURLINTOSalesForce(result,documentProperties,accountId,fileName);
 			}
 		}
 		if(result!=null){

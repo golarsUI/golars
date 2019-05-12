@@ -77,7 +77,54 @@ export class ImportFieldValues {
     { label: 'IN - UST', value: 'IN - UST', enable: true },
     { label: 'IN - VRP', value: 'IN - VRP', enable: true },
   ]
-
+  static compliaceDocumentType = [
+    { label: 'Certificate of Financial Assurance', value: 'Certificate of Financial Assurance' , enable: true},
+    { label: 'Certificate of insurance', value: 'Certificate of insurance' , enable: true},
+    { label: 'Certificate of Insurance (Non-Environmental)', value: 'Certificate of Insurance (Non-Environmental)' , enable: true},
+    { label: 'Deed', value: 'Deed' , enable: true},
+    { label: 'Facility Operator POA', value: 'Facility Operator POA' , enable: true},
+    { label: 'Financial Assurance Certificate', value: 'Financial Assurance Certificate' , enable: true},
+    { label: 'Form 48079', value: 'Form 48079' , enable: true},
+    { label: 'IDEM Delivered Notification Form', value: 'IDEM Delivered Notification Form' , enable: true},
+    { label: 'Invoice', value: 'Invoice' , enable: true},
+    { label: 'Land Contract', value: 'Land Contract' , enable: true},
+    { label: 'Letter of net worth', value: 'Letter of net worth' , enable: true},
+    { label: 'Notification Form', value: 'Notification Form' , enable: true},
+    { label: 'Notification Form (45223)', value: 'Notification Form (45223)' , enable: true},
+    { label: 'Operator Affidavit of Lease', value: 'Operator Affidavit of Lease' , enable: true},
+    { label: 'Other', value: 'Other' , enable: true},
+    { label: 'Owner Affidavit of lease', value: 'Owner Affidavit of lease' , enable: true},
+    { label: 'proof of payment', value: 'proof of payment' , enable: true},
+    { label: 'Property Owner POA', value: 'Property Owner POA' , enable: true},
+    { label: 'Request for Certificate of Financial Assurance - 52884', value: 'Request for Certificate of Financial Assurance - 52884' , enable: true},
+    { label: 'UST Owner POA', value: 'UST Owner POA' , enable: true},
+    { label: 'Operator Lease Agreement', value: 'Operator Lease Agreement' , enable: true},
+    { label: 'endor Contract', value: 'endor Contract' , enable: true}
+  ]
+  static compliaceDocumentTypes=[ 
+  { label: 'Certificate of Financial Assurance', value: 'Certificate of Financial Assurance' , enable: true},
+  { label: 'Certificate of insurance', value: 'Certificate of insurance' , enable: true},
+  { label: 'Certificate of Insurance (Non-Environmental)', value: 'Certificate of Insurance (Non-Environmental)' , enable: true},
+  { label: 'Deed', value: 'Deed' , enable: true},
+  { label: 'Facility Operator POA', value: 'Facility Operator POA' , enable: true},
+  { label: 'Financial Assurance Certificate', value: 'Financial Assurance Certificate' , enable: true},
+  { label: 'Form 48079', value: 'Form 48079' , enable: true},
+  { label: 'IDEM Delivered Notification Form', value: 'IDEM Delivered Notification Form' , enable: true},
+  { label: 'Invoice', value: 'Invoice' , enable: true},
+  { label: 'Land Contract', value: 'Land Contract' , enable: true},
+  { label: 'Letter of net worth', value: 'Letter of net worth' , enable: true},
+  { label: 'Notification Form', value: 'Notification Form' , enable: true},
+  { label: 'Notification Form (45223)', value: 'Notification Form (45223)' , enable: true},
+  { label: 'Operator Affidavit of Lease', value: 'Operator Affidavit of Lease' , enable: true},
+  { label: 'Other', value: 'Other' , enable: true},
+  { label: 'Owner Affidavit of lease', value: 'Owner Affidavit of lease' , enable: true},
+  { label: 'proof of payment', value: 'proof of payment' , enable: true},
+  { label: 'Property Owner POA', value: 'Property Owner POA' , enable: true},
+  { label: 'Request for Certificate of Financial Assurance - 52884', value: 'Request for Certificate of Financial Assurance - 52884' , enable: true},
+  { label: 'UST Owner POA', value: 'UST Owner POA' , enable: true},
+  { label: 'Operator Lease Agreement', value: 'Operator Lease Agreement' , enable: true},
+  { label: 'endor Contract', value: 'endor Contract' , enable: true}
+]
   static stateProgramMappingForDocumentType = [
     // {label:'Select State Program', value:null},
     {
