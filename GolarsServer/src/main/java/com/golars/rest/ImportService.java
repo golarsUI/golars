@@ -21,6 +21,8 @@ import com.golars.util.DBUtil;
 import com.golars.util.GolarsUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.sforce.soap.enterprise.SaveResult;
+import com.sforce.ws.ConnectionException;
 import com.sun.jersey.core.header.ContentDisposition;
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -71,7 +73,18 @@ public class ImportService {
 			@FormDataParam("docProperties") String documentProperties,
 			@FormDataParam("folderProperties") String folderProperties) {
 		String result = null;
-		String accountId = 	GolarsUtil.checkFIDExists(documentProperties);
+		
+		boolean facilityRelated = false;
+		boolean regulatoryRecord = false;
+		String regulatoryType = "Account";
+		String scopeOfWork = "";
+		String stateProgram = "";
+		facilityRelated = getFacilityRelated(documentProperties);
+		regulatoryType = getRegulatorType(documentProperties);
+		regulatoryRecord = getRegulatorRecord(documentProperties);
+		stateProgram = getStateProgram(documentProperties);
+		scopeOfWork = getScopeOfWork(documentProperties);
+		String accountId = 	GolarsUtil.checkFIDExists(documentProperties,facilityRelated,regulatoryType);
 		if(accountId == null){
 			UserSettings keyvalue = new UserSettings();
 			keyvalue.setKey("fid");
@@ -92,8 +105,15 @@ public class ImportService {
 					folder = DBUtil.getInstance().getFolder("root\\indiana\\NotificationFiles");
 				}
 				result = DBUtil.getInstance().saveDocument(is, fileName, documentProperties, folder);
-				if(result != null && accountId != null && !accountId.equalsIgnoreCase("ignore"))
-					GolarsUtil.saveDocumentURLINTOSalesForce(result,documentProperties,accountId,fileName);
+				if(result != null && accountId != null && !accountId.equalsIgnoreCase("ignore")){
+					SaveResult[] saveResults = GolarsUtil.saveDocumentURLINTOSalesForce(result,documentProperties,accountId,fileName,regulatoryType,facilityRelated,regulatoryRecord,stateProgram,scopeOfWork);
+					if (saveResults !=null && saveResults[0].getErrors().length > 0) {
+						UserSettings keyvalue = new UserSettings();
+						keyvalue.setKey("salesforce");
+						keyvalue.setValue("warning");
+						return Response.ok(keyvalue).build();
+					}
+				}
 			}
 		}
 		if(result!=null){
@@ -103,6 +123,43 @@ public class ImportService {
 			return Response.ok(keyvalue).build();
 		}
 		return Response.ok(result).build();
+	}
+
+	private boolean getRegulatorRecord(String documentProperties) {
+		boolean regulatoryRecord;
+		regulatoryRecord = new Gson().fromJson(documentProperties, JsonObject.class).get("regulatoryRecord") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("regulatoryRecord").getAsBoolean()
+				: false;
+		return regulatoryRecord;
+	}
+	private String getScopeOfWork(String documentProperties) {
+		String regulatoryType;
+		regulatoryType = new Gson().fromJson(documentProperties, JsonObject.class).get("scopeOfWork") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("scopeOfWork").toString()
+				: "";
+		return regulatoryType;
+	}
+	private String getStateProgram(String documentProperties) {
+		String regulatoryType;
+		regulatoryType = new Gson().fromJson(documentProperties, JsonObject.class).get("stateProgram") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("stateProgram").getAsString()
+				: "";
+		return regulatoryType;
+	}
+	private String getRegulatorType(String documentProperties) {
+		String regulatoryType;
+		regulatoryType = new Gson().fromJson(documentProperties, JsonObject.class).get("regulatoryType") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("regulatoryType").getAsString()
+				: "Account";
+		return regulatoryType;
+	}
+
+	private boolean getFacilityRelated(String documentProperties) {
+		boolean facilityRelated;
+		facilityRelated = new Gson().fromJson(documentProperties, JsonObject.class).get("facilityRelated") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("facilityRelated").getAsBoolean()
+				: false;
+		return facilityRelated;
 	}
 
 	@Path("{id}/{filename}")
@@ -133,6 +190,7 @@ public class ImportService {
 	}
 
 	@PUT
+	@Path("/new")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateDocProperties(String data) {
@@ -141,10 +199,23 @@ public class ImportService {
 		JsonObject dataObj = new Gson().fromJson(obj.get("data"), JsonObject.class);
 		String docId = dataObj.get("docId").getAsString();
 		String docName = dataObj.get("docName").getAsString();
-		String properties = dataObj.get("properties").getAsString();
+		String documentProperties = dataObj.get("properties").getAsString();
+		
+		boolean facilityRelated = false;
+		facilityRelated = getFacilityRelated(documentProperties);
+		String regulatoryType = "Account";
+		regulatoryType = getRegulatorType(documentProperties);
+		
+		String accountId = 	GolarsUtil.checkFIDExists(documentProperties,facilityRelated,regulatoryType);
+		if(accountId == null){
+			UserSettings keyvalue = new UserSettings();
+			keyvalue.setKey("fid");
+			keyvalue.setValue("notexits");
+			return Response.ok(keyvalue).build();
+		}
 		// JsonObject dataObj1 = new Gson().fromJson(dataObj.get("data"),
 		// JsonObject.class);
-		int resultInt = DBUtil.getInstance().updateDocumentProperties(docId, docName, properties);
+		int resultInt = DBUtil.getInstance().updateDocumentProperties(docId, docName, documentProperties);
 		if (resultInt > 0)
 			result = true;
 		return Response.status(200).entity(result).build();

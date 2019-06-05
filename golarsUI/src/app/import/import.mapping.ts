@@ -554,7 +554,11 @@ export class ImportFieldValues {
 
     ]
 
-
-
+    static regulatoryTypes = [ { label: 'Account', value: 'Account', enable: true },
+                               { label: 'Lead', value: 'Lead', enable: true }];
+                               
+static importTypes = [ { label: 'Regulatory Records', value: 'Regulatory Records', enable: true },
+                       { label: 'GT & NF Attachments', value: 'GT & NF Attachments', enable: true },
+                       { label: 'Others', value: 'Others', enable: true }];
 
 }

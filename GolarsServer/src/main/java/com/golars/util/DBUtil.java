@@ -17,6 +17,7 @@ import com.golars.bean.Account;
 import com.golars.bean.ChangePassword;
 import com.golars.bean.Document;
 import com.golars.bean.Folder;
+import com.golars.bean.Lead;
 import com.golars.bean.User;
 import com.golars.bean.UserSettings;
 
@@ -235,6 +236,7 @@ public class DBUtil {
 			session = HibernateUtil.getSession();
 
 			trx = session.beginTransaction();
+			 fileName = URLEncoder.encode(fileName);
 			Query query = session.createNativeQuery("SELECT * FROM document d where d.name =:name and d.id =:folderId",
 					Document.class);
 			query.setString("name", fileName);
@@ -242,7 +244,7 @@ public class DBUtil {
 			List list = query.list();
 			// Object doc = session.get(Document.class, file.getFilename());
 			
-			 fileName = URLEncoder.encode(fileName);
+			
 		      if (list.size() > 0) {
 		        fileName = generateFileName(fileName);
 		      }
@@ -255,7 +257,7 @@ public class DBUtil {
 		      session.save(file);
 				trx.commit();
 				session.close();
-				filePath = folder.getId()+"/"+fileName;
+				filePath = folder.getId()+"/"+ URLEncoder.encode(fileName);
 				theString = null;
 				file = null;
 				IOUtils.closeQuietly(is);
@@ -875,7 +877,7 @@ public class DBUtil {
 
 	}
 	
-	public String checkFidExists(String fid) {
+	public String checkFidExistsInAccount(String fid) {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
@@ -892,6 +894,35 @@ public class DBUtil {
 			}
 			return null;
 		} catch (Exception exception) {
+			System.out.println("Exception occred while getFolder: " + exception.getMessage());
+			if (trx != null)
+				trx.rollback();
+			if (session != null)
+				session.close();
+			return null;
+		} finally {
+
+		}
+
+	}
+	public String checkFidExistsInLeed(String fid) {
+		Session session = HibernateUtil.getSession();
+		Transaction trx = session.beginTransaction();
+		try {
+			Query query = null;
+			List<Lead> lst = null;
+			query = session.createNativeQuery(
+					"SELECT * FROM leadTable a where a.fid__C ="+fid, Lead.class);
+			lst = query.list();
+			trx.commit();
+			session.close();
+			if(lst != null && lst.size()>0){
+				Lead leed = lst.get(0);
+				return leed.getId();
+			}
+			return null;
+		} catch (Exception exception) {
+			exception.printStackTrace();
 			System.out.println("Exception occred while getFolder: " + exception.getMessage());
 			if (trx != null)
 				trx.rollback();

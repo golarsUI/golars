@@ -22,6 +22,8 @@ export class ImportComponent implements OnInit {
   docTypesFullList = ImportFieldValues.docTypeMapping;
   stateProgram= ImportFieldValues.stateProgramMapping;
   compliaceDocumentTypes = ImportFieldValues.compliaceDocumentTypes;
+  regulatoryTypes = ImportFieldValues.regulatoryTypes;
+  importTypes = ImportFieldValues.importTypes;
   scopeOfWork = [];
   scopeOfWorkFullList = ImportFieldValues.scopeOfWorkMapping;
   stateProgramMappingForDocumentType = ImportFieldValues.stateProgramMappingForDocumentType;
@@ -30,19 +32,22 @@ export class ImportComponent implements OnInit {
   importDocName;
   docData ;
   showSuccessMessage=false;
+  showFileSelectWarningMessage=false;
   successMessage=null;
   showFileSelectErrorMessage=false;
-  fileSelectErrorMessage=null
+  fileSelectErrorMessage=null;
+  fileSelectWarningMessage= null;
   importFolder;
   disableImportButton = false;
 defaultdate;
   model: any = {};
+  
   constructor(private http: HttpClient,private importService: ImportService,private commonService: CommonService) { }
 
   ngOnInit() {
 
     
-
+    this.model.importType = ImportFieldValues.importTypes[0].value;
     var self = this;
     $('body').on('hide.bs.modal', '.modal', function ($event) {
       if ($event.target.id != "importModal") return;
@@ -110,8 +115,12 @@ this.model.docUpdateDate = new Date();
     this.getStateProgramAndScopeOfWorkDropDOwn(null)
     this.model.active = docData.properties.active;
     this.model.docTypes = docData.properties.docTypes;
-     this.model.facilityRelated = docData.properties.facilityRelated;
+     this.model.facilityRelated = docData.properties.facilityRelated == null?true:docData.properties.facilityRelated;
     this.model.compliaceDocumentType = docData.properties.compliaceDocumentType;
+    this.model.regulatoryRecordActive = docData.properties.regulatoryRecordActive;
+    this.model.regulatoryRecord = docData.properties.regulatoryRecord;
+    this.model.regulatoryType = docData.properties.regulatoryType;
+    this.model.description = docData.properties.description;
     if(docData.properties.scopeOfWork != null && docData.properties.scopeOfWork.length>0 && docData.properties.scopeOfWork.indexOf(';')>0)
       this.constructScopeOfWorkArray(docData.properties.scopeOfWork);
     else if(docData.properties.scopeOfWork != null && Array.isArray(docData.properties.scopeOfWork))
@@ -129,9 +138,18 @@ this.model.docUpdateDate = new Date();
     var docProperties = this.getDocumentProperties();
     this.docData.properties = JSON.parse(docProperties);
     this.disableImportButton =true;
+    this.showSuccessMessage = false;
+    this.showFileSelectErrorMessage=false;
     this.importService.updateDocumentPropeties(this.docData.parentid,this.docData.label,docProperties) .subscribe(
       message => {
         // console.log(message)
+        if( message!= null && message.key != null && message.key == "fid" && message.value=="notexits"){
+          this.showFileSelectErrorMessage=true;
+          this.fileSelectErrorMessage="FID doesn't exists.";
+          this.disableImportButton = false; 
+          
+          return;
+        }
         if (message == true) {
           this.showSuccessMessage = true;
           this.successMessage = "Document Properties Updated Successfully !!";
@@ -167,6 +185,7 @@ const frmData = new FormData();
     this.disableImportButton = true;
     this.showFileSelectErrorMessage=false;
     this.showSuccessMessage=false;
+    this.showFileSelectWarningMessage=false;
     this.importService.importDocuments(frmData)
     .subscribe(
         message => {
@@ -175,6 +194,12 @@ const frmData = new FormData();
           if( message!= null && message.key != null && message.key == "fid" && message.value=="notexits"){
             this.showFileSelectErrorMessage=true;
             this.fileSelectErrorMessage="FID doesn't exists.";
+            this.disableImportButton = false; 
+            return;
+          }
+          if( message!= null && message.key != null && message.key == "salesforce" && message.value=="warning"){
+            this.showFileSelectWarningMessage=true;
+            this.fileSelectWarningMessage="File uploaded successfully, However could not be loaded into Salesforce. Please report this issue to support team and update Salesforce manually to be in sync.";
             this.disableImportButton = false; 
             return;
           }
@@ -210,6 +235,9 @@ const frmData = new FormData();
   }
   getDocumentProperties(){
     // console.log(this.model)
+    if(this.model.regulatoryType==null)
+    this.model.regulatoryType = ImportFieldValues.regulatoryTypes[0].value;
+    this.model.docDate = new Date();
     return  JSON.stringify(this.model)
   }
   tmpFolder:any
