@@ -11,8 +11,20 @@
 
 <div *ngIf="docData">
   <div class="heading-text" *ngIf="!folderSelected"><img class="image-height" src="assets/images/docproperties.jpeg"/></div>
+  <div class="ui-g" *ngIf="docData.importType">
+    <div class="ui-g-4">Import Type</div>
+    <div class="ui-g-8">{{docData.importType}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.regulatoryType">
+    <div class="ui-g-4">Regulatory Type</div>
+    <div class="ui-g-8">{{docData.regulatoryType}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.complianceStatus">
+    <div class="ui-g-4">Compliance Status</div>
+    <div class="ui-g-8">{{docData.complianceStatus}}</div>
+  </div>
   <div class="ui-g" *ngIf="docData.docUpdateDate">
-    <div class="ui-g-4">Date Document Updated</div>
+    <div class="ui-g-4">Document Date</div>
     <div class="ui-g-8">{{commonService.getFormatteDate(docData.docUpdateDate)}}</div>
   </div>
   <div class="ui-g" *ngIf="docData.fecilityName">
@@ -20,7 +32,7 @@
     <div class="ui-g-8">{{docData.fecilityName}}</div>
   </div>
   <div class="ui-g" *ngIf="docData.docDate">
-    <div class="ui-g-4">Document Date</div>
+    <div class="ui-g-4">Date Document Updated</div>
     <div class="ui-g-8">{{commonService.getFormatteDate(docData.docDate)}}</div>
   </div>
   <div class="ui-g" *ngIf="docData.fid">
@@ -50,6 +62,10 @@
   <div class="ui-g" *ngIf="docData.scopeOfWork">
     <div class="ui-g-4">Scope of Work</div>
     <div class="ui-g-8">{{docData.scopeOfWork}}</div>
+  </div>
+  <div class="ui-g" *ngIf="docData.description">
+    <div class="ui-g-4">Description</div>
+    <div class="ui-g-8">{{docData.description}}</div>
   </div>
   <div class="ui-g" *ngIf="!folderSelected">
       <div class="ui-g-3">URL</div>

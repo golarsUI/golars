@@ -40,10 +40,10 @@ public class GolarsUtil {
 
 	}
 
-	public static String checkFIDExists(String documentProperties, boolean facilityRelated, String regulatoryType) {
+	public static String checkFIDExists(String documentProperties, String importType, String regulatoryType) {
 						
 		String fid = null;
-		if (!facilityRelated) {
+		if (importType.equalsIgnoreCase("Regulatory Records")) {
 			fid = new Gson().fromJson(documentProperties, JsonObject.class).get("fid") != null
 					? new Gson().fromJson(documentProperties, JsonObject.class).get("fid").toString() : null;
 			if (fid == null || fid.equalsIgnoreCase("\"\""))
@@ -54,6 +54,15 @@ public class GolarsUtil {
 				result = DBUtil.getInstance().checkFidExistsInAccount(fid);
 			else if(regulatoryType!=null && regulatoryType.equalsIgnoreCase("Lead"))
 				result = DBUtil.getInstance().checkFidExistsInLeed(fid);
+				
+			return result;
+		}else if (importType.equalsIgnoreCase("GT & NF Attachments")) {
+			fid = new Gson().fromJson(documentProperties, JsonObject.class).get("fid") != null
+					? new Gson().fromJson(documentProperties, JsonObject.class).get("fid").toString() : null;
+			if (fid == null || fid.equalsIgnoreCase("\"\""))
+				return null;
+			
+			String result = DBUtil.getInstance().checkFidExistsInAccount(fid);
 				
 			return result;
 		}
@@ -70,15 +79,30 @@ public class GolarsUtil {
 				? new Gson().fromJson(documentProperties, JsonObject.class).get("docUpdateDate").getAsString() : "";
 		return docUpdateDate;
 	}
+	private static String getCompliaceDocumentType(String documentProperties){
+		String docUpdateDate = new Gson().fromJson(documentProperties, JsonObject.class).get("complianceStatus") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("complianceStatus").getAsString() : "";
+		return docUpdateDate;
+	}
 	private static String getType(String documentProperties) {
 		String type = new Gson().fromJson(documentProperties, JsonObject.class).get("compliaceDocumentType") != null
 				? new Gson().fromJson(documentProperties, JsonObject.class).get("compliaceDocumentType").getAsString() : "";
+		return type;
+	}
+	private static String getDocTypes(String documentProperties) {
+		String type = new Gson().fromJson(documentProperties, JsonObject.class).get("docTypes") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("docTypes").getAsString() : "";
 		return type;
 	}
 	private static String getDesription(String documentProperties) {
 		String description = new Gson().fromJson(documentProperties, JsonObject.class).get("description") != null
 				? new Gson().fromJson(documentProperties, JsonObject.class).get("description").getAsString() : "";
 		return description;
+	}
+	private static boolean isActive(String documentProperties){
+		boolean active = new Gson().fromJson(documentProperties, JsonObject.class).get("active") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("active").getAsBoolean() : false;
+		return active;
 	}
 	private static String getRequestFrom(String documentProperties) {
 		String description = new Gson().fromJson(documentProperties, JsonObject.class).get("requestFrom") != null
@@ -105,7 +129,7 @@ public class GolarsUtil {
 		return null;
 	}
 
-	public static SaveResult[] saveDocumentURLINTOSalesForce(String url,String documentProperties,String accountId, String fileName, String regulatoryType, boolean facilityRelated, boolean regulatoryRecord, String stateProgram, String scopeOfWork) {
+	public static SaveResult[] saveDocumentURLINTOSalesForce(String url,String documentProperties,String accountId, String fileName, String regulatoryType, String importType, String stateProgram, String scopeOfWork) {
 
 		try {
 			Class<GolarsUtil> cl = GolarsUtil.class;
@@ -135,27 +159,28 @@ public class GolarsUtil {
 				updatedDate = sdf.format(new Date());
 			docLastUpdateDate.setTime(sdf.parse(updatedDate));
 			String docUpdateLocalDate = sdf.format(new Date());
-			docLastUpdateDate.setTime(sdf.parse(docUpdateLocalDate));
+			docUpdateDate.setTime(sdf.parse(docUpdateLocalDate));
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}// all done
-		if(regulatoryRecord){
-		
+		if(importType.equalsIgnoreCase("Regulatory Records")){
+			String compliaceDocumentType = getCompliaceDocumentType(documentProperties);
 		Regulatory_Record__c[] regulatory_Record = new Regulatory_Record__c[1];
 		regulatory_Record[0] = new Regulatory_Record__c();
 		regulatory_Record[0].setDocument_Link__c(g360URL + "/" + url);
-		regulatory_Record[0].setDocument_Type__c(getType(documentProperties));
+		regulatory_Record[0].setDocument_Type__c(getDocTypes(documentProperties));
 		if(regulatoryType!=null && regulatoryType.equalsIgnoreCase("Account"))
 			regulatory_Record[0].setFacility__c(accountId);
 		else if(regulatoryType!=null && regulatoryType.equalsIgnoreCase("Lead"))
 			regulatory_Record[0].setLead__c(accountId);
-		regulatory_Record[0].setIs_Active__c(regulatoryRecord);
+		regulatory_Record[0].setIs_Active__c(isActive(documentProperties));
 		regulatory_Record[0].setScope_of_Work__c(scopeOfWork);
 		regulatory_Record[0].setState_Program__c(stateProgram);
 		regulatory_Record[0].setLast_Update__c(docUpdateDate);
 		regulatory_Record[0].setDocument_Date__c(docLastUpdateDate);
+		regulatory_Record[0].setCompliance_Status__c(compliaceDocumentType);
 		saveResults = connection.create(regulatory_Record);
-		}else{
+		}else if(importType.equalsIgnoreCase("GT & NF Attachments")){
 		Custom_Attachments__c[] contact = new Custom_Attachments__c[1];
 		contact[0] = new Custom_Attachments__c();
 		contact[0].setContact__c(accountId);
@@ -164,8 +189,7 @@ public class GolarsUtil {
 		contact[0].setSource__c("g360");
 		contact[0].setG360_URL__c(g360URL + "/" + url);
 		contact[0].setDescription__c(getDescription(documentProperties));
-		
-		contact[0].setReport_Date__c(docUpdateDate);
+		contact[0].setReport_Date__c(docLastUpdateDate);
 		saveResults = connection.create(contact);
 
 		}

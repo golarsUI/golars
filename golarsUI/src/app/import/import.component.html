@@ -19,19 +19,34 @@
       <div>
         <label>Import Type</label>
       </div>
-      <p-dropdown [options]="importTypes" [(ngModel)]="model.importType" name="model.importType" [style]="{'width':'100%'}"></p-dropdown>
+      <p-dropdown [options]="importTypes" [(ngModel)]="model.importType" name="model.importType" [style]="{'width':'100%'}" (onChange)="resetSuccessFailureMessages()" [disabled]="editDocument"></p-dropdown>
     </div>
 
    
       <div class="ui-g-12 ui-md-6">
-        <label>Date Document Updated</label>
+        <label>Document Date</label>
         <p-calendar [(ngModel)]="model.docUpdateDate" name="docUpdateDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1980:2030"></p-calendar>
       </div>
-      <div class="ui-g-12 ui-md-6">
+      <div class="ui-g-12 ui-md-6"  *ngIf="model?.importType == 'Regulatory Records'">
+        <div>
+          <label>Regulatory Type</label>
+        </div>
+        <p-dropdown [options]="regulatoryTypes" [(ngModel)]="model.regulatoryType" name="model.regulatoryType"
+          [style]="{'width':'100%'}"></p-dropdown>
+      </div>
+     
+      <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Others'">
   
         <label>Facility Name </label>
         <input id="fecilityName" type="text" class="form-control form-control-height" pInputText [(ngModel)]="model.fecilityName"
           name="fecilityName" />
+      </div>
+      <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'GT & NF Attachments' || model?.importType == 'Others'">
+        <div>
+          <label>Document Type</label>
+        </div>
+        <p-dropdown [options]="compliaceDocumentTypes" [(ngModel)]="model.compliaceDocumentType" name="model.compliaceDocumentType" placeholder="Select Compliance Document Type"
+          [style]="{'width':'100%'}"></p-dropdown>
       </div>
       <!-- <div class="ui-g-12 ui-md-6">
         <label>Document Date</label>
@@ -41,19 +56,35 @@
       <label>FID / State Cleanup#</label>
       <input id="fid" type="text" class="form-control form-control-height" pInputText [(ngModel)]="model.fid" name="fid" />
     </div>
+    <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Regulatory Records'">
+      <div>
+        <label>State Program</label>
+      </div>
+      <p-dropdown [options]="stateProgram" [(ngModel)]="model.stateProgram" name="model.stateProgram" placeholder="Select State Program"
+      [style]="{'width':'100%'}" (onChange)="getStateProgramAndScopeOfWorkDropDOwn($event)"></p-dropdown>
+    </div>
+    <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Regulatory Records'">
+      <div>
+        <label>Document Type</label>
+      </div>
+      <p-dropdown [options]="docTypes" [(ngModel)]="model.docTypes" name="docTypes" placeholder="Select Document Type"  [style]="{'width':'100%'}"></p-dropdown>
+    </div>
+
     <!-- <div class="ui-g-12 ui-md-6">
       <div>
         <label>&nbsp;</label>
       </div>
       <p-checkbox name="model.facilityRelated" binary="true" #facilityRelatedCheckbox label="Not Facility Related" [(ngModel)]="model.facilityRelated"></p-checkbox>
     </div> -->
-    <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'GT & NF Attachments' || model?.importType == 'Others'">
+
+    <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Regulatory Records'">
       <div>
-        <label>Document Type</label>
+        <label>Scope of Work</label>
       </div>
-      <p-dropdown [options]="compliaceDocumentTypes" [(ngModel)]="model.compliaceDocumentType" name="model.compliaceDocumentType" placeholder="Select Compliance Document Type"
-        [style]="{'width':'100%'}"></p-dropdown>
+      <p-multiSelect [options]="scopeOfWork" defaultLabel="Select Scope of Work" [(ngModel)]="model.scopeOfWork" name="scopeOfWork"
+        resetFilterOnHide="true" [style]="{'width':'100%','min-height':'30px'}"></p-multiSelect>
     </div>
+
     <!-- <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Regulatory Records'">
       <div>
         <label>&nbsp;</label>
@@ -67,12 +98,12 @@
       <p-checkbox name="model.regulatoryRecord" binary="true" #regulatoryRecordCheckbox label="Is Regulatory Record?" [(ngModel)]="model.regulatoryRecord"></p-checkbox>
     </div> -->
     <div class="ui-g-12 ui-md-6"  *ngIf="model?.importType == 'Regulatory Records'">
-      <div>
-        <label>Regulatory Type</label>
+        <div>
+          <label>Compliance Status</label>
+        </div>
+        <p-dropdown [options]="complianceStatuses" [(ngModel)]="model.complianceStatus" name="model.complianceStatus"
+          [style]="{'width':'100%'}"></p-dropdown>
       </div>
-      <p-dropdown [options]="regulatoryTypes" [(ngModel)]="model.regulatoryType" name="model.regulatoryType"
-        [style]="{'width':'100%'}"></p-dropdown>
-    </div>
 
     <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Others'">
       <label>Street</label>
@@ -84,32 +115,15 @@
       <input id="city" type="text" class="form-control form-control-height" pInputText [(ngModel)]="model.city" name="city" />
     </div>
     <div class="ui-g-12 ui-md-6"  *ngIf="model?.importType == 'Regulatory Records' || model?.importType == 'Others'">
-      <div *ngIf="model?.importType == 'Others'">
+      <div>
         <label>&nbsp;</label>
       </div>
       <p-checkbox name="group1" binary="true" #activeCheckbox label="Is Active" [(ngModel)]="model.active"></p-checkbox>
     </div>
-    <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Regulatory Records'">
-      <div>
-        <label>State Program</label>
-      </div>
-      <p-dropdown [options]="stateProgram" [(ngModel)]="model.stateProgram" name="model.stateProgram" placeholder="Select State Program"
-      [style]="{'width':'100%'}" (onChange)="getStateProgramAndScopeOfWorkDropDOwn($event)"></p-dropdown>
-    </div>
+    
 
-    <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Regulatory Records'">
-      <div>
-        <label>Document Type</label>
-      </div>
-      <p-dropdown [options]="docTypes" [(ngModel)]="model.docTypes" name="docTypes" placeholder="Select Document Type"  [style]="{'width':'100%'}"></p-dropdown>
-    </div>
-    <div class="ui-g-12 ui-md-6" *ngIf="model?.importType == 'Regulatory Records'">
-      <div>
-        <label>Scope of Work</label>
-      </div>
-      <p-multiSelect [options]="scopeOfWork" defaultLabel="Select Scope of Work" [(ngModel)]="model.scopeOfWork" name="scopeOfWork"
-        resetFilterOnHide="true" [style]="{'width':'100%','min-height':'30px'}"></p-multiSelect>
-    </div>
+    
+
     <div class="ui-g-12 ui-md-12">
       <label>Description</label>
       <textarea id="description"  class="form-control textarea-ui-inputtext" [rows]="3" pInputTextarea [(ngModel)]="model.description" name="description"

@@ -25,8 +25,8 @@ export class MiddlepaneComponent implements OnInit {
   tableColumnMapping = {
     'fid': 'FID',
     'fecilityName': 'Facility Name',
-    'docUpdateDate': 'Date Document Uploaded',
-    'docDate': 'Document Date',
+    'docDate': 'Date Document Uploaded',
+    'docUpdateDate': 'Document Date',
     'stateProgram': 'State Program',
     'docTypes': 'Document Type',
     'scopeOfWork': 'Scope of Work',

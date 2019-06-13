@@ -20,9 +20,10 @@ import com.golars.bean.UserSettings;
 import com.golars.util.DBUtil;
 import com.golars.util.GolarsUtil;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sforce.soap.enterprise.SaveResult;
-import com.sforce.ws.ConnectionException;
 import com.sun.jersey.core.header.ContentDisposition;
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -74,17 +75,17 @@ public class ImportService {
 			@FormDataParam("folderProperties") String folderProperties) {
 		String result = null;
 		
-		boolean facilityRelated = false;
-		boolean regulatoryRecord = false;
+		String importType = "";
+//		boolean regulatoryRecord = false;
 		String regulatoryType = "Account";
 		String scopeOfWork = "";
 		String stateProgram = "";
-		facilityRelated = getFacilityRelated(documentProperties);
+		importType = getImportType(documentProperties);
 		regulatoryType = getRegulatorType(documentProperties);
-		regulatoryRecord = getRegulatorRecord(documentProperties);
+//		regulatoryRecord = getRegulatorRecord(documentProperties);
 		stateProgram = getStateProgram(documentProperties);
 		scopeOfWork = getScopeOfWork(documentProperties);
-		String accountId = 	GolarsUtil.checkFIDExists(documentProperties,facilityRelated,regulatoryType);
+		String accountId = 	GolarsUtil.checkFIDExists(documentProperties,importType,regulatoryType);
 		if(accountId == null){
 			UserSettings keyvalue = new UserSettings();
 			keyvalue.setKey("fid");
@@ -105,8 +106,8 @@ public class ImportService {
 					folder = DBUtil.getInstance().getFolder("root\\indiana\\NotificationFiles");
 				}
 				result = DBUtil.getInstance().saveDocument(is, fileName, documentProperties, folder);
-				if(result != null && accountId != null && !accountId.equalsIgnoreCase("ignore")){
-					SaveResult[] saveResults = GolarsUtil.saveDocumentURLINTOSalesForce(result,documentProperties,accountId,fileName,regulatoryType,facilityRelated,regulatoryRecord,stateProgram,scopeOfWork);
+				if(result != null && accountId != null && !accountId.equalsIgnoreCase("ignore") && importType!=null && !importType.equalsIgnoreCase("Others")){
+					SaveResult[] saveResults = GolarsUtil.saveDocumentURLINTOSalesForce(result,documentProperties,accountId,fileName,regulatoryType,importType,stateProgram,scopeOfWork);
 					if (saveResults !=null && saveResults[0].getErrors().length > 0) {
 						UserSettings keyvalue = new UserSettings();
 						keyvalue.setKey("salesforce");
@@ -133,11 +134,18 @@ public class ImportService {
 		return regulatoryRecord;
 	}
 	private String getScopeOfWork(String documentProperties) {
-		String regulatoryType;
+		JsonArray regulatoryType;
 		regulatoryType = new Gson().fromJson(documentProperties, JsonObject.class).get("scopeOfWork") != null
-				? new Gson().fromJson(documentProperties, JsonObject.class).get("scopeOfWork").toString()
-				: "";
-		return regulatoryType;
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("scopeOfWork").getAsJsonArray()
+				: new JsonArray();
+				
+				String scopeOfWork = "";
+		for (JsonElement jsonElement : regulatoryType) {
+			scopeOfWork+=jsonElement.getAsString()+";";
+		}
+		if(scopeOfWork.endsWith(";"))
+			scopeOfWork = scopeOfWork.substring(0,scopeOfWork.length()-1);
+		return scopeOfWork;
 	}
 	private String getStateProgram(String documentProperties) {
 		String regulatoryType;
@@ -154,11 +162,11 @@ public class ImportService {
 		return regulatoryType;
 	}
 
-	private boolean getFacilityRelated(String documentProperties) {
-		boolean facilityRelated;
-		facilityRelated = new Gson().fromJson(documentProperties, JsonObject.class).get("facilityRelated") != null
-				? new Gson().fromJson(documentProperties, JsonObject.class).get("facilityRelated").getAsBoolean()
-				: false;
+	private String getImportType(String documentProperties) {
+		String facilityRelated;
+		facilityRelated = new Gson().fromJson(documentProperties, JsonObject.class).get("importType") != null
+				? new Gson().fromJson(documentProperties, JsonObject.class).get("importType").getAsString()
+				: "Regulatory Records";
 		return facilityRelated;
 	}
 
@@ -201,8 +209,8 @@ public class ImportService {
 		String docName = dataObj.get("docName").getAsString();
 		String documentProperties = dataObj.get("properties").getAsString();
 		
-		boolean facilityRelated = false;
-		facilityRelated = getFacilityRelated(documentProperties);
+		String facilityRelated = "";
+		facilityRelated = getImportType(documentProperties);
 		String regulatoryType = "Account";
 		regulatoryType = getRegulatorType(documentProperties);
 		

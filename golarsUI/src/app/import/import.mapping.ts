@@ -557,8 +557,15 @@ export class ImportFieldValues {
     static regulatoryTypes = [ { label: 'Account', value: 'Account', enable: true },
                                { label: 'Lead', value: 'Lead', enable: true }];
                                
-static importTypes = [ { label: 'Regulatory Records', value: 'Regulatory Records', enable: true },
+    static importTypes = [ { label: 'Regulatory Records', value: 'Regulatory Records', enable: true },
                        { label: 'GT & NF Attachments', value: 'GT & NF Attachments', enable: true },
                        { label: 'Others', value: 'Others', enable: true }];
+
+   static complianceStatuses = [ { label: 'Serious Non-Compliance', value: 'Serious Non-Compliance', enable: true },
+                       { label: 'Compliant', value: 'Compliant', enable: true },
+                       { label: 'Non-Compliance', value: 'Non-Compliance', enable: true },
+                       { label: 'Unknown', value: 'Unknowne', enable: true },
+                       { label: 'Serious Violation', value: 'Serious Violation', enable: true },
+                       { label: 'Enforcement', value: 'Enforcement', enable: true }];
 
 }

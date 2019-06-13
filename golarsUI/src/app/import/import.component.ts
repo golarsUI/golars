@@ -23,6 +23,7 @@ export class ImportComponent implements OnInit {
   stateProgram= ImportFieldValues.stateProgramMapping;
   compliaceDocumentTypes = ImportFieldValues.compliaceDocumentTypes;
   regulatoryTypes = ImportFieldValues.regulatoryTypes;
+  complianceStatuses = ImportFieldValues.complianceStatuses;
   importTypes = ImportFieldValues.importTypes;
   scopeOfWork = [];
   scopeOfWorkFullList = ImportFieldValues.scopeOfWorkMapping;
@@ -84,6 +85,7 @@ defaultdate;
       if(stateProgramValues[i].enable)
       self.stateProgram.push(stateProgramValues[i]);
     }
+    self.model.importType = ImportFieldValues.importTypes[0].value;
   }
 
 })
@@ -132,6 +134,10 @@ this.model.docUpdateDate = new Date();
   constructScopeOfWorkArray(scopeofworkObj){
     var docSworkArray = scopeofworkObj.split(";")
     this.model.scopeOfWork = docSworkArray;
+  }
+  resetSuccessFailureMessages(){
+    this.showSuccessMessage = false;
+    this.showFileSelectErrorMessage=false;  
   }
   updateDocumentProperties(){
     // console.log(this.docData)
@@ -186,6 +192,7 @@ const frmData = new FormData();
     this.showFileSelectErrorMessage=false;
     this.showSuccessMessage=false;
     this.showFileSelectWarningMessage=false;
+    var importType = this.model.importType;
     this.importService.importDocuments(frmData)
     .subscribe(
         message => {
@@ -208,6 +215,7 @@ const frmData = new FormData();
           this.successMessage = "File(s) Imported Successfully !!";
           this.fileInput.files=[];
           this.model={}
+          this.model.importType = importType;
           this.commonService.notify({ type: 'fetchSubFolders', node: this.selectedFolder, isDocumentsRequired: true });
         }else
         {
@@ -237,6 +245,8 @@ const frmData = new FormData();
     // console.log(this.model)
     if(this.model.regulatoryType==null)
     this.model.regulatoryType = ImportFieldValues.regulatoryTypes[0].value;
+    if(this.model.complianceStatus==null)
+    this.model.complianceStatus = ImportFieldValues.complianceStatuses[0].value;
     this.model.docDate = new Date();
     return  JSON.stringify(this.model)
   }
