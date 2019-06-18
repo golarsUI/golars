@@ -174,6 +174,9 @@ expandParent(node){
     this.model.email = this.user.emailAddress;
     this.model.admin = this.user.admin;
     this.model.active = this.user.active;
+    console.log("this.user.permissonFolderID ---",this.user.permissonFolderID)
+    if(this.user.permissonFolderID == null || this.user.permissonFolderID == undefined)
+    this.user.permissonFolderID="";
     var folderNameArray = this.user.permissonFolderID.split(",");
     var folderDisplayName = "";
     if(folderNameArray.length>0){

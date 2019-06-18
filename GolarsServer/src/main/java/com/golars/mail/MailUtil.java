@@ -19,7 +19,12 @@ import com.golars.util.CMSConstants;
 public class MailUtil {
 	public static void main(String[] args) {
 
-		// sendEmail("avsrinivasa@gmail.com");
+//		 sendEmail("avsrinivasa@gmail.com");
+		User userobj = new User();
+		userobj.setEmailAddress("avsrinivasa@gmail.com");
+		userobj.setUsername("userName");
+		userobj.setPassword("userName");
+		new MailUtil().sendEmail(userobj, false);
 	}
 	Properties emailProperties = new Properties();
 	Message fetchEmailProperties() {
