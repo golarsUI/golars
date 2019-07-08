@@ -245,8 +245,8 @@ const frmData = new FormData();
     // console.log(this.model)
     if(this.model.regulatoryType==null)
     this.model.regulatoryType = ImportFieldValues.regulatoryTypes[0].value;
-    if(this.model.complianceStatus==null)
-    this.model.complianceStatus = ImportFieldValues.complianceStatuses[0].value;
+    // if(this.model.complianceStatus==null)
+    // this.model.complianceStatus = ImportFieldValues.complianceStatuses[0].value;
     this.model.docDate = new Date();
     return  JSON.stringify(this.model)
   }

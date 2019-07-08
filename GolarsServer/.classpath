@@ -39,5 +39,6 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/force-wsc-43.0.0.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/salesforcemapping.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/javax.servlet-api-3.0.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
