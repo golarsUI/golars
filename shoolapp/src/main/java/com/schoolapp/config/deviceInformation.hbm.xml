@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+ <class name="com.schoolapp.bean.DeviceInformation" table="deviceInfo">
+  <id name="deviceId">
+   <column name="deviceId"  />
+  </id>
+  <property name="fcmToken" column="fcmToken" type="java.lang.String" />
+  <property name="categories" column="categories" type="java.lang.String" />
+  <property name="platform" column="deviceType" type="java.lang.String" />
+ </class>
+</hibernate-mapping>
