@@ -1,0 +1,77 @@
+<div class="row full-height-width body-background-color-login" style="margin-left:0px !important">
+  <div class="col-sm-12">
+      <div class="container full-height-width">
+
+          <div class="body-background-color-login center_div" >
+                  <div > <a href="#"><img class="company-logo"   src="assets/images/school-name.jpg" alt=""> </a></div> 
+              <div *ngIf="newlyCretedUser == true">
+                   <!-- newly created start-->
+                   <div>
+                         
+                          <span style="text-align: center"><h2>Reset Password</h2></span>
+                          <div class="alert alert-success" [hidden]='!showSuccessMessage'>
+                              <strong>Success!</strong> Password changed succesfully. Click here to <a href='/' >Home page</a>
+                          </div>
+                          <div [hidden]='!showresetErrorMessage' class="alert alert-danger" role="alert">
+                          Username doesn't exists in database
+                      </div>
+                          
+                        <form name="form" (ngSubmit)="f.form.valid && changePassword()" #f="ngForm" novalidate>
+                          <div class="ui-gform-group" [ngClass]="{ 'has-error': f.submitted && !newPassword.valid }">
+                              <label for="newPassword">New Password</label>
+                              <input type="password" class="form-control body-background-color-login" [ngClass]="{ 'is-invalid': f.submitted && !newPassword.valid }" name="newPassword" [(ngModel)]="model.newPassword"
+                                  #newPassword="ngModel" required maxlength="50"/>
+                              <div *ngIf="f.submitted && !newPassword.valid" class="help-block text-danger">
+                                  <span *ngIf="newPassword.errors?.required">New Password is required</span>
+                                  </div>
+                          </div>
+                      
+                          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !confirmPassword.valid }">
+                              <label for="confirmPassword">Confirm Password</label>
+                              <input type="password" class="form-control body-background-color-login" name="confirmPassword" [ngClass]="{ 'is-invalid': f.submitted && !confirmPassword.valid }" [(ngModel)]="model.confirmPassword"
+                                  #confirmPassword="ngModel" required minlength="5" maxlength="12"/>
+                              <div *ngIf="f.submitted && !confirmPassword.valid" class="help-block text-danger">
+                                  <span *ngIf="confirmPassword.errors?.required"> Confirm Password is required</span>
+                                  <span *ngIf="confirmPassword.errors?.mismatch">New Password and Confirm Password doesn't match</span></div>
+                          </div>
+                          <div class="form-group">
+                              <button class="btn btn-primary">Submit</button>
+                              <a  class="btn btn-link"(click)="logout()">Cancel</a>
+                          </div>
+                      </form>
+                      </div>
+                   <!-- newly created end-->
+                  </div>
+
+              <div *ngIf="newlyCretedUser == false">
+              <div class="alert alert-danger" *ngIf="loginErrorMessage != null">
+                  {{loginErrorMessage}}
+              </div>
+              <form class="ui-g" name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
+                  <div class="ui-g-12 form-group has-feedback has-feedback-left">
+                      <input type="text" placeholder="Username" [ngClass]="{ 'is-invalid': f.submitted && !username.valid }" class="form-control login-textfield-border" name="username" [(ngModel)]="model.username"
+                          #username="ngModel" required (keypress)="loginErrorMessage=null" />
+                          <i class="form-control-feedback fa fa-user login-textfield-icon"></i>
+                      <div *ngIf="f.submitted && !username.valid" class="help-block text-danger">Username is required</div>
+                  </div>
+                  <div class="form-group ui-g-12 ">
+                      <input [ngClass]="{ 'is-invalid': f.submitted && !password.valid }" type="password" class="form-control login-textfield-border" name="password"
+                          [(ngModel)]="model.password" #password="ngModel"  placeholder="Password" required (keypress)="loginErrorMessage=null" />
+                          <i class="form-control-feedback fa fa-lock login-textfield-icon"></i>
+                      <div *ngIf="f.submitted && !password.valid" class="help-block text-danger">Password is required</div>
+                  </div>
+                  <!-- <div class="ui-g-12" style="padding:0px"><div class="ui-g-6" style="padding:0px"><input type="checkbox" style="margin-right:10px;border:1px solid #89DF93"/><a href="" >Remember me</a></div>
+                  <div class="ui-g-6" ><a href="" style="float:right">Forgot Password?</a></div></div> -->
+                  <div class="form-group ui-g-12">
+                      <div class="ui-g-12" style="padding:0px"> <div class="ui-g-6" style="padding:0px"><button class="btn btn-primary btn-block login-button">Log in</button></div></div>
+                  </div>
+                  <!-- <div class="clearfix">
+                      <a href="#" data-toggle="modal" data-target="#resetModal">Forgot Password?</a>
+                  </div> -->
+              </form>
+          </div>
+          </div>
+      </div>
+
+  </div>
+</div>

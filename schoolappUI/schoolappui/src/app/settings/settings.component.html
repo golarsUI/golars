@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-4">
+    <h4>School App Settings</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-4">
+    <div class="alert alert-success" [hidden]='!showSuccess'>
+      <strong>Success!</strong> {{successSettingsMessage}}
+    </div>
+    <div [hidden]='!showFailure' class="alert alert-danger" role="alert">
+      {{failureSettingsMessage}}
+    </div>
+  </div>
+</div>
+<div class="row notification-margin-top">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-4">
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" [(ngModel)]="modal.disableConnectTab" value=""> Disable Connect app
+      </label>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-2" style="margin-top: 40px">
+    <button type="button" class="btn btn-primary" (click)="saveSettings()">Save</button>
+    <a [routerLink]="['/login']" class="btn btn-link">Cancel</a>
+  </div>
+</div>

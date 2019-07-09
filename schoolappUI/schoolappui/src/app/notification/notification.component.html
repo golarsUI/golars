@@ -1,0 +1,101 @@
+<div class="row">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-4">
+    <h4>School Notification</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-4">
+    <div class="alert alert-success" [hidden]='!showSuccess'>
+      <strong>Success!</strong> {{successNotificationMessage}}
+    </div>
+    <div [hidden]='!showFailure' class="alert alert-danger" role="alert">
+      {{failureNotificationMessage}}
+    </div>
+  </div>
+</div>
+<div class="row notification-margin-top">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-4">
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" [(ngModel)]="modal.smgNews" value=""> SMG News & Updates
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" [(ngModel)]="modal.smgSchool" value=""> SMG School
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.youthMin"> Youth Ministry
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.adultFaith"> Adult Faith Formation
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.childFaith"> Child Faith Formation
+
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.smgMen"> SMG Men
+
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.smgWomen"> SMG Women
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.youngFamily"> Young Families Ministry
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.smgSports"> SMG Sports
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.silverAngle"> Silver Angels
+      </label>
+    </div>
+
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-6">
+    <div class="form-group notification-margin-top">
+      <label for="comment">Notification Title:</label>
+      <input type="text" class="form-control" [(ngModel)]="this.modal.notificationTitle" id="notificationTitle">
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-6">
+    <div class="form-group notification-margin-top">
+      <label for="comment">Notification Message:</label>
+      <textarea class="form-control" [(ngModel)]="this.modal.notificationMessage" rows="5" id="notificationMessage"></textarea>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-2"></div>
+  <div class="col-sm-6">
+    <button type="button" class="btn btn-primary" (click)="sendNotification()" [disabled]="!this.modal.smgNews && !this.modal.smgSchool 
+    && !this.modal.youthMin   && !this.modal.adultFaith && !this.modal.childFaith && !this.modal.smgMen && !this.modal.smgWomen
+    && !this.modal.youngFamily && !this.modal.smgSports && !this.modal.silverAngle || !this.modal.notificationTitle?.trim() || !this.modal.notificationMessage?.trim()">Send</button>
+  </div>
+</div>
