@@ -14,26 +14,27 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class NotificationUtil {
-	public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
+	public final static String API_URL_FCM = "https://stmariagoretticatholic-9c4c7.firebaseio.com/fcm/send";
 
 	// Method to send Notifications from server to client end.
-//	 public final static String AUTH_KEY_FCM = "AAAAMEHYkBE:APA91bH-6WJbm_BALcZ9zvXv5Y8zq-aHb14PHqn1-e3UzOvhRFh7Bj2w_c-2BF9WWuIz8pOEH7AO6PQ4-yw8Ubm-V2N-_knI9qAPGLQ1r7MFwizYJwKbJjVfYw7BNPZXRalkc79zTxDq";
-//	 public final static String
-//	 DEVICE_ID="fLREIuANPus:APA91bHCekI2lz2NcLleYfcJWa8MWN4DfssToBbVUzOOb8TyugSPCwsFv2cZcWx4Syc8rJuoY5dyPFTgcRFtBHekTdSUirtV37nxtyshELtUBYcPRC_J-WF_83QL324S9WfayDvQ-G2K";
+	 public final static String AUTH_KEY_FCM = "AAAA5eiYMOg:APA91bEmWufboVTZiTjFGZuwPRVbkdMCBHXD97Jy_WJjm36FPtYPnpZj4Rvnh9gDDHeBh2Q8zIn_PFeOMbFf9axtlua2iF56gMS-9jSklEC9Xslj_JRoiRpACWxeJn96mt1XiBg7zGcL";
+	 public final static String
+	 DEVICE_ID="cFCqBnHcRU8:APA91bHTvj0iUa5BbfLlAuaSLoGL3GkFui3wWzt3GM0gfBzZCZBjFRoLarezvEubLkVdbNau89Q3MQJDEiEixynHQxuk50XcDgrwLdnxK-ifSxSGIaWVs6Xxjk0bteIiohqIsLhHCqgw";
 	public static void main(String[] args) {
 
 		try {
 			List<String> putIds2 = new ArrayList<String>();
-//			putIds2.add(DEVICE_ID);
+			putIds2.add(DEVICE_ID);
 			// putIds2.add("f7iOlu0IRjo:APA91bEdIK1M5GeZxWrDt9zmqwe4C48qwreRg67npfUm5CemztN4RQknFpZXJBDOO4QgMpYN3yW-DJjAzOIw3RQjc9tFXRSruF2N76OrSWRbki47on64Xr60nOqv-hAEvkrQTbGvaxtX");
-//			send_FCM_NotificationMulti(putIds2, "token", AUTH_KEY_FCM, "Hi this is Srinivasa","this is sample message",true);
+			send_FCM_NotificationMulti(putIds2, "token", AUTH_KEY_FCM, "Hi this is Srinivasa","this is sample message",true);
+//			send_FCM_Notification();
 
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
 
-	/*static void send_FCM_Notification(String tokenId, String server_key, String message) {
+	static void send_FCM_Notification() {
 
 		try {
 			// Create URL instance.
@@ -47,17 +48,17 @@ public class NotificationUtil {
 			// set method as POST or GET
 			conn.setRequestMethod("POST");
 			// pass FCM server key
-			conn.setRequestProperty("Authorization", "key=" + server_key);
+			conn.setRequestProperty("Authorization", "key=" + AUTH_KEY_FCM);
 			// Specify Message Format
 			conn.setRequestProperty("Content-Type", "application/json");
 			// Create JSON Object & pass value
 			JSONObject infoJson = new JSONObject();
 
 			infoJson.put("title", "Alankit");
-			infoJson.put("body", message);
+			infoJson.put("body", "test Message");
 
 			JSONObject json = new JSONObject();
-			json.put("to", tokenId.trim());
+			json.put("to", DEVICE_ID);
 			json.put("notification", infoJson);
 
 			System.out.println("json :" + json.toString());
@@ -77,14 +78,14 @@ public class NotificationUtil {
 					System.out.println("Android Notification Response : " + reader.readLine());
 				} else if (status == 401) {
 					// client side error
-					System.out.println("Notification Response : TokenId : " + tokenId + " Error occurred :");
+					System.out.println("Notification Response : TokenId : " + AUTH_KEY_FCM + " Error occurred :");
 				} else if (status == 501) {
 					// server side error
-					System.out.println("Notification Response : [ errorCode=ServerError ] TokenId : " + tokenId);
+					System.out.println("Notification Response : [ errorCode=ServerError ] TokenId : " + AUTH_KEY_FCM);
 				} else if (status == 503) {
 					// server side error
 					System.out.println(
-							"Notification Response : FCM Service is Unavailable  	    		TokenId : " + tokenId);
+							"Notification Response : FCM Service is Unavailable  	    		TokenId : " + AUTH_KEY_FCM);
 				}
 			}
 		} catch (MalformedURLException mlfexception) {
@@ -97,7 +98,7 @@ public class NotificationUtil {
 		}
 
 	}
-*/
+
 	public static boolean send_FCM_NotificationMulti(List<String> putIds2, String tokenId, String server_key,String title, String message,boolean isAndroid) {
 		try {
 		
@@ -150,6 +151,7 @@ public class NotificationUtil {
 			if (null != conn) {
 				status = conn.getResponseCode();
 			}
+			System.out.println("json :" + 				status);
 			if (status != 0) {
 
 				if (status == 200) {
