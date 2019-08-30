@@ -935,4 +935,9 @@ public class DBUtil {
 
 	}
 
+	public void fetchAndSubmitToSalesForce() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
