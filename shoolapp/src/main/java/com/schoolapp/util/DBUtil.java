@@ -790,8 +790,12 @@ public class DBUtil {
 			alertcol += "youngFamily, ";
 		if (notification.isYouthMin())
 			alertcol += "youthMin, ";
+		if (notification.isMusic())
+			alertcol += "music, ";
 		if(alertcol.endsWith(", "))
 			alertcol = alertcol.substring(0,alertcol.lastIndexOf(", "));
+		System.out.println("The selected categories are -----  "+alertcol);
+		
 		return alertcol;
 	}
 

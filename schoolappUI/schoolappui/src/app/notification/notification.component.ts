@@ -18,7 +18,7 @@ export class NotificationComponent implements OnInit {
   showFailure=false;
   failureNotificationMessage ="";
   modal={smgNews:true,smgSchool:true,youthMin:true,adultFaith:true,childFaith:true,
-    smgMen:true,smgWomen:true,youngFamily:true,smgSports:true,silverAngle:true,notificationTitle:"",
+    smgMen:true,smgWomen:true,youngFamily:true,smgSports:true,silverAngle:true,musicMinistry:true,notificationTitle:"",
     notificationMessage:""};
   ngOnInit() { 
     if(localStorage.getItem("currentUser") === null ||  localStorage.getItem('loginSuccessful')==null){

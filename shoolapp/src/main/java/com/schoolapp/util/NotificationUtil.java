@@ -14,7 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class NotificationUtil {
-	public final static String API_URL_FCM = "https://stmariagoretticatholic-9c4c7.firebaseio.com/fcm/send";
+	public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
 
 	// Method to send Notifications from server to client end.
 	 public final static String AUTH_KEY_FCM = "AAAA5eiYMOg:APA91bEmWufboVTZiTjFGZuwPRVbkdMCBHXD97Jy_WJjm36FPtYPnpZj4Rvnh9gDDHeBh2Q8zIn_PFeOMbFf9axtlua2iF56gMS-9jSklEC9Xslj_JRoiRpACWxeJn96mt1XiBg7zGcL";

@@ -70,7 +70,11 @@
         <input type="checkbox" value="" [(ngModel)]="modal.silverAngle"> Silver Angels
       </label>
     </div>
-
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="" [(ngModel)]="modal.musicMinistry"> Music Ministry
+      </label>
+    </div>
   </div>
 </div>
 <div class="row">
@@ -95,7 +99,7 @@
   <div class="col-sm-2"></div>
   <div class="col-sm-6">
     <button type="button" class="btn btn-primary" (click)="sendNotification()" [disabled]="!this.modal.smgNews && !this.modal.smgSchool 
-    && !this.modal.youthMin   && !this.modal.adultFaith && !this.modal.childFaith && !this.modal.smgMen && !this.modal.smgWomen
+    && !this.modal.youthMin   && !this.modal.adultFaith && !this.modal.childFaith && !this.modal.smgMen && !this.modal.smgWomen && !this.modal.musicMinistry
     && !this.modal.youngFamily && !this.modal.smgSports && !this.modal.silverAngle || !this.modal.notificationTitle?.trim() || !this.modal.notificationMessage?.trim()">Send</button>
   </div>
 </div>

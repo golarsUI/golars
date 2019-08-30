@@ -11,6 +11,7 @@ public class Notification {
 	private boolean youngFamily;
 	private boolean smgSports;
 	private boolean silverAngle;
+	private boolean music;
 	private String notificationTitle;
 	private String notificationMessage;
 	public boolean isSmgNews() {
@@ -85,7 +86,12 @@ public class Notification {
 	public void setNotificationMessage(String notificationMessage) {
 		this.notificationMessage = notificationMessage;
 	}
-		
+	public void setMusic(boolean music) {
+		this.music = music;
+	}
+	public boolean isMusic() {
+		return music;
+	}
 
 	
 }

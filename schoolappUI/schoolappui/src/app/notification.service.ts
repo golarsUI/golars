@@ -12,7 +12,7 @@ export class NotificationService {
     return this.http.post<any>(URLConstants.NOTIFICATION_URL, { smgNews: modal.smgNews, 
       smgSchool: modal.smgSchool, youthMin:modal.youthMin, adultFaith: modal.adultFaith,
       childFaith: modal.childFaith,smgMen: modal.smgMen,smgWomen: modal.smgWomen,
-      youngFamily: modal.youngFamily,smgSports: modal.smgSports,silverAngle: modal.silverAngle,
+      youngFamily: modal.youngFamily,smgSports: modal.smgSports,silverAngle: modal.silverAngle,music: modal.musicMinistry,
       notificationTitle:modal.notificationTitle, notificationMessage: modal.notificationMessage
 
     }).pipe(map(success => {
