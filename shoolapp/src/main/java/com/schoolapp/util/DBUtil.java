@@ -522,7 +522,8 @@ public class DBUtil {
 		try {
 			;
 			// Transaction t = session.beginTransaction();
-			Query query = session.createNativeQuery("SELECT * FROM schooluser where emailAddress =:emailAddress", User.class);
+			Query query = session.createNativeQuery("SELECT * FROM schooluser where emailAddress =:emailAddress",
+					User.class);
 			query.setString("emailAddress", emailAddress);
 			List<User> lst = query.list();
 			trx.commit();
@@ -643,9 +644,10 @@ public class DBUtil {
 		Transaction trx = session.beginTransaction();
 		try {
 			DeviceInformation deviceInfo = (DeviceInformation) session.get(DeviceInformation.class, deviceId);
-			if(deviceInfo !=null)
-			deviceInfo.setSettings(getSettings(false,session));
+			if (deviceInfo != null)
+				deviceInfo.setSettings(getSettings(false, session));
 			deviceInfo.setServerKey(getServerKey());
+			deviceInfo.setTestMode(getTestMode());
 			trx.commit();
 			session.close();
 			return deviceInfo;
@@ -676,8 +678,9 @@ public class DBUtil {
 				dbDeviceInfo.setPlatform(deviceInfo.getPlatform());
 				session.update(dbDeviceInfo);
 			}
-			deviceInfo.setSettings(getSettings(false,session));
+			deviceInfo.setSettings(getSettings(false, session));
 			deviceInfo.setServerKey(getServerKey());
+			deviceInfo.setTestMode(getTestMode());	
 			
 			trx.commit();
 			session.close();
@@ -751,7 +754,6 @@ public class DBUtil {
 			session.save(alert);
 			trx.commit();
 			session.close();
-			
 
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -792,25 +794,25 @@ public class DBUtil {
 			alertcol += "youthMin, ";
 		if (notification.isMusic())
 			alertcol += "music, ";
-		if(alertcol.endsWith(", "))
-			alertcol = alertcol.substring(0,alertcol.lastIndexOf(", "));
-		System.out.println("The selected categories are -----  "+alertcol);
-		
+		if (alertcol.endsWith(", "))
+			alertcol = alertcol.substring(0, alertcol.lastIndexOf(", "));
+		System.out.println("The selected categories are -----  " + alertcol);
+
 		return alertcol;
 	}
 
 	public List<String> getDeviceIds(Notification notification, boolean isAndroid) {
 		String alertCol = getAlertInformation(notification);
 		String[] categoriesArray = alertCol.split(",");
-		String mobileType="";
-		if(isAndroid)
+		String mobileType = "";
+		if (isAndroid)
 			mobileType = "'%android%'";
 		else
 			mobileType = "'%ios%'";
 
 		String categoryString = "";
 		int counter = 0;
-		 categoryString += "where deviceType like "+mobileType;
+		categoryString += "where deviceType like " + mobileType;
 		if (categoriesArray.length > 0)
 			categoryString += " and (";
 		for (String category : categoriesArray) {
@@ -822,13 +824,13 @@ public class DBUtil {
 		}
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
-		try{
-		Query query = session.createNativeQuery("SELECT fcmToken FROM deviceInfo " + categoryString);
-		List<String> lst = query.list();
-		trx.commit();
-		session.close();
-		return lst;
-		}catch (Exception exception) {
+		try {
+			Query query = session.createNativeQuery("SELECT fcmToken FROM deviceInfo " + categoryString);
+			List<String> lst = query.list();
+			trx.commit();
+			session.close();
+			return lst;
+		} catch (Exception exception) {
 			exception.printStackTrace();
 			System.out.println("Exception occred while getDeviceIds : " + exception.getMessage());
 			if (trx != null)
@@ -846,8 +848,7 @@ public class DBUtil {
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
-			Settings dbSettings = (Settings) session.get(Settings.class,
-					settings.getId());
+			Settings dbSettings = (Settings) session.get(Settings.class, settings.getId());
 			if (dbSettings == null)
 				session.save(settings);
 			else {
@@ -869,11 +870,12 @@ public class DBUtil {
 		} finally {
 
 		}
-	
+
 	}
-private static String getServerKey(){
-	Properties emailProperties = new Properties();
-	
+
+	private static String getServerKey() {
+		Properties emailProperties = new Properties();
+
 		try {
 			Class<DBUtil> cl = DBUtil.class;
 
@@ -883,9 +885,26 @@ private static String getServerKey(){
 		}
 		String AUTH_KEY_FCM = emailProperties.getProperty("AUTH_KEY_FCM");
 		return AUTH_KEY_FCM;
-}
+	}
+
+	private static String getTestMode() {
+		Properties emailProperties = new Properties();
+
+		try {
+			Class<DBUtil> cl = DBUtil.class;
+
+			emailProperties.load(cl.getResourceAsStream("/emailconfig.properties"));
+		} catch (Exception e1) {
+			System.out.println("Configuration fiele not found" + e1.getMessage());
+		}
+		String TESTMODE = emailProperties.getProperty("TESTMODE");
+		if(TESTMODE == null)
+			return false+"";
+		return TESTMODE;
+	}
+
 	public static List getSettings(boolean alreadyInTransaction, Session session) {
-		if(alreadyInTransaction){
+		if (alreadyInTransaction) {
 			Query query = session.createNativeQuery("SELECT * FROM settings", Settings.class);
 			List lst = query.list();
 			return lst;

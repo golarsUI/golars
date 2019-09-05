@@ -18,6 +18,8 @@ public class DeviceInformation implements Serializable{
 	private String platform;
 	private List<Settings> settings = new ArrayList<Settings>();
 	private String serverKey;
+	private String testMode;
+	
 	public String getDeviceId() {
 		return deviceId;
 	}
@@ -56,5 +58,10 @@ public class DeviceInformation implements Serializable{
 	public String getServerKey() {
 		return serverKey;
 	}
-	
+	public void setTestMode(String testMode) {
+		this.testMode = testMode;
+	}
+	public String getTestMode() {
+		return testMode;
+	}
 }
