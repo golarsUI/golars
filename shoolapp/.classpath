@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
 	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/asm-3.1.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jersey-client-1.18.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jersey-core-1.18.jar"/>
@@ -43,5 +42,10 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/json-20180813.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jersey-multipart-1.19.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -647,7 +647,7 @@ public class DBUtil {
 			if (deviceInfo != null)
 				deviceInfo.setSettings(getSettings(false, session));
 			deviceInfo.setServerKey(getServerKey());
-			deviceInfo.setTestMode(getTestMode());
+			deviceInfo.setTestMode(getTestModeById("testMode",false,session));
 			trx.commit();
 			session.close();
 			return deviceInfo;
@@ -843,19 +843,22 @@ public class DBUtil {
 		}
 	}
 
-	public boolean saveSettings(Settings settings) {
+	public boolean saveSettings(Settings[] settings) {
 
 		Session session = HibernateUtil.getSession();
 		Transaction trx = session.beginTransaction();
 		try {
-			Settings dbSettings = (Settings) session.get(Settings.class, settings.getId());
+			for (Settings localSettings : settings) {
+				
+			
+			Settings dbSettings = (Settings) session.get(Settings.class, localSettings.getId());
 			if (dbSettings == null)
-				session.save(settings);
+				session.save(localSettings);
 			else {
-				dbSettings.setValue(settings.getValue());
+				dbSettings.setValue(localSettings.getValue());
 				session.update(dbSettings);
 			}
-
+			}
 			trx.commit();
 			session.close();
 			return true;
@@ -916,6 +919,13 @@ public class DBUtil {
 		t.commit();
 		session.close();
 		return lst;
+	}
+
+	public static String getTestModeById(String id, boolean alreadyInTransaction, Session session) {
+		Settings settings = (Settings) session.get(Settings.class, id);
+		if(settings != null)
+		return settings.getValue();
+			return false+"";
 	}
 
 }

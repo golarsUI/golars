@@ -23,7 +23,7 @@ public class SettingsService {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response saveSettings(Settings settings) {
+	public Response saveSettings(Settings[] settings) {
 		boolean result;
 		result = DBUtil.getInstance().saveSettings(settings);
 
