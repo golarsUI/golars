@@ -82,8 +82,12 @@ defaultdate;
     self.stateProgramMappingForScopeOfWork = self.commonService.getScopeOfWorkPreferences();
     self.compliaceDocumentTypes   = self.commonService.getComplianceDocTypePreferences();
     for(var i=0;i<stateProgramValues.length;i++){
-      if(stateProgramValues[i].enable)
-      self.stateProgram.push(stateProgramValues[i]);
+      if(stateProgramValues[i].enable){
+        if(stateProgramValues[i] !=null && stateProgramValues[i].value == 'IN-Brownfields'){
+          stateProgramValues[i].value = 'IN - Brownfields';
+        }
+        self.stateProgram.push(stateProgramValues[i]);
+    }
     }
     self.model.importType = ImportFieldValues.importTypes[0].value;
   }

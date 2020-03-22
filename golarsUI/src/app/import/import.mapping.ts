@@ -70,7 +70,7 @@ export class ImportFieldValues {
 
   static stateProgramMapping = [
     // {label:'Select State Program', value:null},
-    { label: 'IN - Brownfields', value: 'IN-Brownfields' , enable: true},
+    { label: 'IN - Brownfields', value: 'IN - Brownfields' , enable: true},
     { label: 'IN - ELTF', value: 'IN - ELTF', enable: true },
     { label: 'IN - LUST', value: 'IN - LUST', enable: true },
     { label: 'IN - State Cleanup', value: 'IN - State Cleanup' , enable: true },
