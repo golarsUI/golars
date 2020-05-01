@@ -65,6 +65,43 @@ public class ImportService {
 		return Response.ok(result).build();
 	}
 	
+	// for salesforce monthly report
+	@POST
+	@Path("/monthlyReport")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+
+	public Response uploadFileFromSalesForce(@FormDataParam("fileUpload") FormDataBodyPart body,
+			@FormDataParam("docProperties") String documentProperties,
+			@FormDataParam("folderProperties") String folderProperties) {
+		String result = null;
+		if(documentProperties == null || documentProperties.length()==0) {
+			documentProperties="{\"fecilityName\":\"NULL\",\"fid\":\"NULL\",\"isActive\":\"false\",\"username\":\"admin\"}";
+		}
+		
+		for (BodyPart part : body.getParent().getBodyParts()) {
+
+			InputStream is = part.getEntityAs(InputStream.class);
+			ContentDisposition meta = part.getContentDisposition();
+			if (meta.getFileName() != null) {
+				String fileName = getFileExtension(meta.getFileName()).equalsIgnoreCase("")
+						?gen()+".pdf" : meta.getFileName();
+				Folder folder = new Gson().fromJson(folderProperties, Folder.class);
+				if(folder == null){
+					folder = DBUtil.getInstance().getFolder("root\\Monthly Reports");
+				}
+				result = DBUtil.getInstance().saveDocument(is, fileName, documentProperties, folder);
+			}
+		}
+		if(result!=null){
+			UserSettings keyvalue = new UserSettings();
+			keyvalue.setKey("fileName");
+			keyvalue.setValue(result);
+			return Response.ok(keyvalue).build();
+		}
+		return Response.ok(result).build();
+	}
+	
 	@POST
 	@Path("/new")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
