@@ -7,7 +7,7 @@
 		<property name="connection.url">jdbc:mysql://localhost/golarsdatabase?autoReconnect=true
 		</property>
 		<property name="connection.username">golars</property>
-		<property name="connection.password">golars</property>
+		<property name="connection.password">Golars@123</property>
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 		<property name="show_sql">true</property>
